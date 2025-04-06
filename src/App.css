@@ -1,5 +1,6 @@
 body{
     font-family: "Nunito", sans-serif;
+    background: #f1f1f1;
 }
 
 .MuiBadge-badge{background-color: red !important;}
@@ -7,3 +8,6 @@ body{
 .ReactCollapse--collapse {
     transition: height 500ms;
   }
+
+  .btn-blue{background: #3872fa !important; color:#fff !important; padding: 8px 20px !important;}
+  .btn-blue:hover{background: #0a2a74 !important;}

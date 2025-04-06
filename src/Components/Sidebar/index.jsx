@@ -31,15 +31,18 @@ const Sidebar = () => {
 
       <ul>
         <li>
+          <Link to='/'>
           <Button className='!justify-start !capatalize gap-3 !text-black !font-[500] !py-2' >
           <div className="flex items-center gap-3">
           <span><RxDashboard className='!text-[18px]'/></span>
          <span>Dashboard</span> 
           </div>
           </Button>
+          </Link>
           </li>
 
           <li>
+          
           <Button className='!flex items-center justify-start !py-2 !capatalize gap-3 !text-black !font-[500]' onClick={()=>isOpensubmenu(1)} >
           <div className="flex items-center gap-3">
           <FaRegImage  className='!text-[18px]'/>
@@ -48,6 +51,7 @@ const Sidebar = () => {
           ><FaAngleDown className={`transition-all ${submenuIndex===1 ?'rotate-180':''}`}/></span>
           </div>
           </Button>
+         
 
 
         <Collapse isOpened={submenuIndex===1?true:false}>
@@ -73,13 +77,16 @@ const Sidebar = () => {
           </li>
 
           <li>
+          <Link to='/users'>
           <Button className='!justify-start !capatalize !py-2 gap-3 !text-black !font-[500]' >
           <div className="flex items-center gap-3">< ImUsers className='!text-[18px]'/>
           Users
           </div></Button>
+          </Link>
           </li>
 
           <li>
+          
           <Button className='!flex items-center justify-start !py-2 !capatalize gap-3
            !text-black !font-[500]' onClick={()=>isOpensubmenu(2)} >
           <div className="flex items-center gap-3">
@@ -89,24 +96,29 @@ const Sidebar = () => {
           ><FaAngleDown className={`transition-all ${submenuIndex===2 ?'rotate-180':''}`}/></span>
           </div>
           </Button>
+          
 
 
         <Collapse isOpened={submenuIndex===2?true:false}>
           <ul className='w-full'>
             <li className='w-full'>
+            <Link to='/product/list'>
               <Button className='!text-[rgba(0,0,0,0.8)] !pl-10 !capatalize w-full !text-[12px] 
               !font-[400] !justify-start !gap-1'>
                 <span className='!block !w-[5px] !h-[5px] !rounded-full !bg-black'></span>
                 Products List
               </Button>
+              </Link>
             </li>
 
             <li className='w-full'>
+            <Link to='/products/uploads'>
               <Button className='!text-[rgba(0,0,0,0.8)] !capatalize w-full !text-[12px] 
               !pl-10 !font-[400] !justify-start !gap-1'>
                 <span className='!block !w-[5px] !h-[5px] !rounded-full  !bg-black '></span>
                 Product Upload
               </Button>
+              </Link>
             </li>
           </ul>
         </Collapse>
@@ -114,6 +126,7 @@ const Sidebar = () => {
           </li>
 
           <li>
+            
           <Button className='!flex items-center justify-start !py-2 !capatalize gap-3
            !text-black !font-[500]' onClick={()=>isOpensubmenu(3)} >
           <div className="flex items-center gap-3">
@@ -128,45 +141,55 @@ const Sidebar = () => {
         <Collapse isOpened={submenuIndex===3?true:false}>
           <ul className='w-full'>
             <li className='w-full'>
+            <Link to='/categories'>
               <Button className='!text-[rgba(0,0,0,0.8)] !pl-10 !capatalize w-full !text-[12px] 
               !font-[400] !justify-start !gap-1'>
                 <span className='!block !w-[5px] !h-[5px] !rounded-full !bg-black'></span>
                 Category List
               </Button>
+              </Link>
             </li>
 
             <li className='w-full'>
+            <Link to='/category/add'>
               <Button className='!text-[rgba(0,0,0,0.8)] !capatalize w-full !text-[12px] 
               !pl-10 !font-[400] !justify-start !gap-1'>
                 <span className='!block !w-[5px] !h-[5px] !rounded-full  !bg-black '></span>
                 Add Category List
               </Button>
+              </Link>
             </li>
 
             <li className='w-full'>
+            <Link to='/category/subcat'>
               <Button className='!text-[rgba(0,0,0,0.8)] !capatalize w-full !text-[12px] 
               !pl-10 !font-[400] !justify-start !gap-1'>
                 <span className='!block !w-[5px] !h-[5px] !rounded-full  !bg-black '></span>
                 Sub Category List
               </Button>
+              </Link>
             </li>
 
             <li className='w-full'>
+            <Link to='/category/subcat/add'>
               <Button className='!text-[rgba(0,0,0,0.8)] !capatalize w-full !text-[12px] 
               !pl-10 !font-[400] !justify-start !gap-1'>
                 <span className='!block !w-[5px] !h-[5px] !rounded-full  !bg-black '></span>
                 Add  Sub Cat List
               </Button>
+              </Link>
             </li>
           </ul>
         </Collapse>
 
           </li>
           <li>
+          <Link to='/orders'>
           <Button className='!justify-start !py-2 !capatalize gap-3 !text-black !font-[500]' >
           <div className="flex items-center gap-3">< IoBagCheck className='!text-[18px]'/>
          <span>Orders</span> </div>
          </Button>
+         </Link>
           </li>
 
           <li>

@@ -11,14 +11,24 @@ const App = ()=>{
     exact:true,
     element:(
 
-      <section>
-        <div className="main">
-        <Header/>
+      <section className="main">
+         <Header/>
+        
+       
         <div className="contentMain flex">
-          <div className="sidebarWrapper w-[25%]"></div>
+          <div className="sidebarWrapper w-[18%]">
+          <Sidebar/>
+          </div>
+           <div className="contentRight !py-3 !px-3 mt-2 w-[80%]">
+          <Dashboard/>
         </div>
+        
         </div>
-        <Sidebar/>
+       
+        
+      
+       
+        
       </section>
    
 
