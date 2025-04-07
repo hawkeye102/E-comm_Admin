@@ -52,7 +52,7 @@ const Header = () => {
         className='w-full h-full object-cover'/>
       </div>
         <Menu
-       anchormyAcc={anchormyAcc}
+        anchorEl={anchormyAcc}
         id="account-menu"
         open={openmyAcc}
         onClose={handleClosemyAcc}
