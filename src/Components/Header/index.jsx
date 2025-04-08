@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, PureComponent } from 'react'
 import Button from '@mui/material/Button';
 import { RiMenu2Fill } from "react-icons/ri";
 import Badge from '@mui/material/Badge';
@@ -14,6 +14,7 @@ import { FaRegBell } from "react-icons/fa";
 import { useState } from 'react';
 import {Mycontext} from "../../App"
 
+
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
     right: -3,
@@ -26,6 +27,11 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 const Header = () => {
   const [anchormyAcc, setanchormyAcc] = React.useState(null);
   const openmyAcc = Boolean(anchormyAcc);
+
+  
+  
+    
+
   const handleClickmyAcc = (event) => {
     setanchormyAcc(event.currentTarget);
   };
@@ -34,11 +40,14 @@ const Header = () => {
   };
   const context =useContext(Mycontext)
 
+  
+
   return (
-    <header className={`w-full h-auto ${context.issidebaropen ? 'pl-64' : 'pl-4'} pr-5 shadow-md flex items-center justify-between`}>
+    <header className={`w-full h-auto ${context.issidebaropen ? 'pl-64' : 'pl-4'} pr-5  transition-all duration-300 ease-in-out
+    shadow-md flex items-center justify-between`}>
 
       <div className='part1'>
-        <Button className='!w-[40px] !h-[40px] !rounded-full' 
+        <Button className='!w-[40px] !h-[40px] !rounded-full transition-all ' 
         onClick={()=>context.setIssidebaropen(!context.issidebaropen)}>
           < AiOutlineMenuUnfold className='text-[22px] !text-[rgba(0,0,0,0.8)]'/>
           </Button>
@@ -126,7 +135,9 @@ const Header = () => {
         </MenuItem>
        </Menu>
        </div>
+       
       </div>
+      
       
 
       

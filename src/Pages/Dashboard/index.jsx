@@ -13,6 +13,10 @@ import { FaRegEye } from "react-icons/fa6";
 import { FiTrash2 } from "react-icons/fi";
 import Tooltip from '@mui/material/Tooltip';
 import Pagination from '@mui/material/Pagination';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import { BiExport } from "react-icons/bi";
+import ChartsSection from '../Charts';
 
 
 
@@ -20,6 +24,12 @@ import Pagination from '@mui/material/Pagination';
 
 const Dashboard = () => {
   const [expandedRow, setExpandedRow] = useState(null);
+
+  const [Catfilterval, setCatfilterval] = React.useState('');
+
+  const handleChangecategoryFilter = (event) => {
+    setCatfilterval(event.target.value);
+  };
 
   const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
   const toggleRow = (id) => {
@@ -67,6 +77,8 @@ const Dashboard = () => {
       image: "data:image/jpeg;base64,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"
     }
   ];
+
+  
   return (
     <>
     <div className='dashboardWrapper w-full h-full flex flex-col '>
@@ -152,7 +164,33 @@ const Dashboard = () => {
        <h2 className='text-[18px] font-bold'>Products</h2>
       </div>
 
-     
+     <div className='flex items-center w-full  pl-3 mb-2 justify-between '>
+      <div className='col w-[15%]'>
+        <h2 className='font-[600] text-[16px] mb-2'>Category By</h2>
+        <Select
+        className='w-full'
+        size='small'
+          labelId="demo-simple-select-helper-label"
+          id="demo-simple-select-helper"
+          value={Catfilterval}
+          label="Category"
+          onChange={handleChangecategoryFilter}
+        >
+          <MenuItem value="">
+            <em>None</em>
+          </MenuItem>
+          <MenuItem value={10}>Men</MenuItem>
+          <MenuItem value={20}>Women</MenuItem>
+          <MenuItem value={30}>Kids</MenuItem>
+        </Select>
+       
+      
+      </div>
+      <div className='col w-[25%] ml-auto mt-8 flex items-center gap-3'>
+        <Button className='btn-blue  btn-sm  !bg-green-600'>Export</Button>
+        <Button className='btn-sm btn-blue'>Add Products</Button>
+      </div>
+     </div>
 
        <div className="relative overflow-x-auto  ">
                  <table className="w-full ">
@@ -573,7 +611,27 @@ const Dashboard = () => {
          <div className='!flex !items-center !justify-end'> <Pagination count={10} color="primary" className='!px-3 !py-3' /></div>
         
             </div>
+            
+           <div className="w-full mt-7 bg-white rounded-md">
+            <h2 className='font-[600] text-[16px] px-2 py-2 pb-0'>Total Users & Total Sales</h2>
+            <div className='flex items-center  px-3 py-3 pt-0 gap-5'>
+              <span className='flex items-center gap-1 text-[14px]'>
+                <span className='block w-[8px] h-[8px] rounded-full bg-green-500 '>
+                  </span>Total Users</span>
+
+                  <span className='flex items-center gap-1 text-[14px]'>
+                <span className='block w-[8px] h-[8px] rounded-full bg-blue-500 '>
+                  </span>Total Sales</span>
+            </div>
+
+            
+            <div className="w-full h-[300px]"><ChartsSection/></div>
+            </div> 
             </div>  
+
+
+    
+            
        </>
   )
 }
