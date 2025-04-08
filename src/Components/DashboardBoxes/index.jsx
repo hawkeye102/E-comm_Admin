@@ -12,7 +12,7 @@ import{Navigation} from 'swiper/modules'
 const Dashboardbox = () => {
   return (
     <>
-    <div className='relative '><Swiper
+    <div className='relative w-full'><Swiper
     slidesPerView={4}
     spaceBetween={10}
     navigation={true}

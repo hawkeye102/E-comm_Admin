@@ -69,14 +69,15 @@ const Dashboard = () => {
   ];
   return (
     <>
-    <div className='w-full  !h-[250px] bg-[#f1faff] py-3  !p-3 border border-[rgba(0,0,0,0.1)] flex items-center gap-8 mb-5 
+    <div className='dashboardWrapper w-full h-full flex flex-col '>
+    <div className='w-full  h-[250px] bg-[#f1faff] py-3  !p-3 border border-[rgba(0,0,0,0.1)] flex items-center gap-8 mb-5 
     justify-between rounded-md'>
   <div className='info'>
  <h1 className='text-[45px] font-bold leading-12 mb-3'>Good Morning,<br/>
   Cameron </h1>
   <p>here's what happening on your store today. see the statistics at once</p>
 
-  <Button className='btn-blue !capatalize !mt-5'><BsPlusLg />Add Product</Button>
+  <Button className='btn-blue !capitalize !mt-5'><BsPlusLg />Add Product</Button>
   </div>
 
   <img src='/shop.jpg' className='w-[300px]'/>
@@ -88,7 +89,7 @@ const Dashboard = () => {
         <h2 className='text-[18px] font-bold'>Recent Orders</h2>
       </div>
 
-       <div class="relative overflow-x-auto ">
+       <div className="relative overflow-x-auto ">
                  <table className="w-full border border-gray-300 rounded-lg ">
                   <thead className="text-[14px]">
                     <tr className="bg-blue-50">
@@ -150,6 +151,8 @@ const Dashboard = () => {
       <div className='flex items-center justify-between py-3 px-3 '>
        <h2 className='text-[18px] font-bold'>Products</h2>
       </div>
+
+     
 
        <div className="relative overflow-x-auto  ">
                  <table className="w-full ">
@@ -570,7 +573,7 @@ const Dashboard = () => {
          <div className='!flex !items-center !justify-end'> <Pagination count={10} color="primary" className='!px-3 !py-3' /></div>
         
             </div>
-         
+            </div>  
        </>
   )
 }

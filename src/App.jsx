@@ -1,46 +1,59 @@
-import React from "react";
+import React, { useState, createContext } from "react";
 import "./App.css";
-import {createBrowserRouter,RouterProvider} from "react-router-dom"
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Dashboard from "./Pages/Dashboard";
 import Header from "./Components/Header";
 import Sidebar from "./Components/Sidebar";
 
-const App = ()=>{
-  const router = createBrowserRouter([{
-    path:"/",
-    exact:true,
-    element:(
+const Mycontext = createContext();
 
-      <section className="main">
-         <Header/>
-        
-       
-        <div className="contentMain flex">
-          <div className="sidebarWrapper w-[18%]">
-          <Sidebar/>
-          </div>
-           <div className="contentRight !py-3 !px-3 mt-2 w-[80%]">
-          <Dashboard/>
+
+const Layout = () => {
+  const { issidebaropen } = React.useContext(Mycontext);
+
+  return (
+    <section className="main w-full h-screen flex flex-col">
+      <Header />
+
+      <div className="contentMain flex w-full">
+        {/* Sidebar */}
+        <div
+          className={`sidebarWrapper overflow-hidden transition-all duration-300 ease-in-out ${
+            issidebaropen ? "w-[18%]" : "w-0"
+          }`}
+        >
+          {issidebaropen && <Sidebar />}
         </div>
-        
+
+        {/* Dashboard content */}
+        <div
+          className={`contentRight transition-all py-3 px-3 mt-2 flex-grow ${
+            issidebaropen ? "w-[82%]" : "w-full"
+          }`}
+        >
+          <Dashboard />
         </div>
-       
-        
-      
-       
-        
-      </section>
-   
+      </div>
+    </section>
+  );
+};
 
-    ),
-  }])
-  return(
-    <>
-   <RouterProvider router={router}/>
-   
-   </>
-  )
+const App = () => {
+  const [issidebaropen, setIssidebaropen] = useState(true);
 
-}
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Layout />,
+    },
+  ]);
 
-export default App
+  return (
+    <Mycontext.Provider value={{ issidebaropen, setIssidebaropen }}>
+      <RouterProvider router={router} />
+    </Mycontext.Provider>
+  );
+};
+
+export default App;
+export { Mycontext };

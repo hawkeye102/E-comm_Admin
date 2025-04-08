@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Button from '@mui/material/Button';
 import { RiMenu2Fill } from "react-icons/ri";
 import Badge from '@mui/material/Badge';
@@ -9,9 +9,10 @@ import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import { FaRegUser } from "react-icons/fa6";
 import { AiOutlineLogout } from "react-icons/ai";
-
+import { AiOutlineMenuUnfold } from "react-icons/ai";
 import { FaRegBell } from "react-icons/fa";
 import { useState } from 'react';
+import {Mycontext} from "../../App"
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -31,11 +32,15 @@ const Header = () => {
   const handleClosemyAcc = () => {
     setanchormyAcc(null);
   };
+  const context =useContext(Mycontext)
+
   return (
-    <header className='w-full h-auto pl-64 pr-5 shadow-md  flex items-center justify-between'>
+    <header className={`w-full h-auto ${context.issidebaropen ? 'pl-64' : 'pl-4'} pr-5 shadow-md flex items-center justify-between`}>
+
       <div className='part1'>
-        <Button className='!w-[40px] !h-[40px] !rounded-full'>
-          <RiMenu2Fill className='text-[22px] !text-[rgba(0,0,0,0.8)]'/>
+        <Button className='!w-[40px] !h-[40px] !rounded-full' 
+        onClick={()=>context.setIssidebaropen(!context.issidebaropen)}>
+          < AiOutlineMenuUnfold className='text-[22px] !text-[rgba(0,0,0,0.8)]'/>
           </Button>
       </div>
 
