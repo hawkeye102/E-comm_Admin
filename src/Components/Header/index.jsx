@@ -52,13 +52,15 @@ const Header = () => {
           < AiOutlineMenuUnfold className='text-[22px] !text-[rgba(0,0,0,0.8)]'/>
           </Button>
       </div>
-
       <div className='part2 w-[40%] flex items-center justify-end gap-3'>
       <IconButton aria-label="cart">
       <StyledBadge badgeContent={4} color="secondary">
       <FaRegBell />
       </StyledBadge>
     </IconButton>
+
+  {
+    context.isLogin ?
 
     <div className='relative'>
     <div className='rounded-full w-[40px] h-[40px] overflow-hidden cursor-pointer' onClick={handleClickmyAcc}>
@@ -136,9 +138,13 @@ const Header = () => {
        </Menu>
        </div>
        
-      </div>
+       : 
+       
+       <Button className='btn-blue btn-sm !rounded-full'>Sign up</Button>
+  }
+     
       
-      
+     </div>
 
       
   

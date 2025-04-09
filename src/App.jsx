@@ -4,12 +4,15 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Dashboard from "./Pages/Dashboard";
 import Header from "./Components/Header";
 import Sidebar from "./Components/Sidebar";
+import Login from "./Pages/Login"
 
 const Mycontext = createContext();
 
 
 const Layout = () => {
   const { issidebaropen } = React.useContext(Mycontext);
+
+ 
 
   return (
     <section className="main w-full h-screen flex flex-col">
@@ -40,16 +43,28 @@ const Layout = () => {
 
 const App = () => {
   const [issidebaropen, setIssidebaropen] = useState(true);
+  const [isLogin,setisLogin] = useState()
 
   const router = createBrowserRouter([
     {
       path: "/",
       element: <Layout />,
     },
+
+    {
+      path: "/login",
+      element: <Login/>,
+    },
   ]);
 
+  const values={
+    issidebaropen,
+     setIssidebaropen,
+    isLogin,
+    setisLogin
+  }
   return (
-    <Mycontext.Provider value={{ issidebaropen, setIssidebaropen }}>
+    <Mycontext.Provider value={values}>
       <RouterProvider router={router} />
     </Mycontext.Provider>
   );
