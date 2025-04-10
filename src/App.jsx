@@ -5,6 +5,7 @@ import Dashboard from "./Pages/Dashboard";
 import Header from "./Components/Header";
 import Sidebar from "./Components/Sidebar";
 import Login from "./Pages/Login"
+import Signup from "./Pages/SignUp";
 
 const Mycontext = createContext();
 
@@ -54,6 +55,11 @@ const App = () => {
     {
       path: "/login",
       element: <Login/>,
+    },
+
+    {
+      path: "/sign-up",
+      element: <Signup/>,
     },
   ]);
 

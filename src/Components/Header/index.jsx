@@ -13,6 +13,7 @@ import { AiOutlineMenuUnfold } from "react-icons/ai";
 import { FaRegBell } from "react-icons/fa";
 import { useState } from 'react';
 import {Mycontext} from "../../App"
+import {Link} from 'react-router-dom';
 
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -140,7 +141,11 @@ const Header = () => {
        
        : 
        
-       <Button className='btn-blue btn-sm !rounded-full'>Sign up</Button>
+       <Link to='/sign-up'>
+        <Button className='btn-blue btn-sm !rounded-full' onClick={()=>navigate('/sign-up')}>Sign up
+          
+        </Button>
+       </Link>
   }
      
       

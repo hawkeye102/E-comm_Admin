@@ -10,7 +10,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { FaRegEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 
-const Login = () => {
+const Signup = () => {
     const [loadinggoogle, setLoadinggoogle] = React.useState(false);
     const [loadingInsta, setLoadingInsta] = React.useState(false);
     const [isPassword,setIsPassword] = React.useState(false);
@@ -32,9 +32,23 @@ const Login = () => {
             />
           </Link>
   
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <NavLink
               to="/login"
+              className={({ isActive }) =>
+                isActive
+                  ? "rounded-full px-2 py-2 text-white flex items-center gap-2 transition-all duration-200"
+                  : "rounded-full px-4 py-2  !text-[rgba(0,0,0,0.9)] flex items-center gap-2 transition-all duration-200"
+              }
+            >
+              <Button className="!flex gap-2 !text-black   !rounded-full !w-full">
+                <MdOutlineLogin className="!font-bold" />
+                Login
+              </Button>
+            </NavLink>
+  
+            <NavLink
+              to="/sign-up"
               className={({ isActive }) =>
                 isActive
                   ? "rounded-full px-2 py-2 text-white flex items-center gap-2 transition-all duration-200"
@@ -43,14 +57,9 @@ const Login = () => {
             >
               <Button className="!flex gap-2 !bg-[#f1f1f1] !text-black !font-bold !rounded-full">
                 <MdOutlineLogin className="!font-bold" />
-                Login
+                Signup
               </Button>
             </NavLink>
-  
-            <Button className=" !mr-7 !text-[rgba(0,0,0,0.9)] flex gap-2">
-              <FaUserPlus className="!font-bold" />
-              Sign Up
-            </Button>
           </div>
         </header>
   
@@ -73,9 +82,9 @@ const Login = () => {
   </div>
 
   <h2 className="text-lg font-semibold text-black leading-snug">
-    Welcome Back
+    Join us Today, get special
     <div className="text-sm font-normal text-red-700">
-      Sign In with your Credentials
+      benefits and stay up to date
     </div>
   </h2>
 
@@ -145,6 +154,12 @@ const Login = () => {
 
         <form className='w-full  px-8'>
         <div className='form-group mt-2'>
+          <h4>Full Name</h4>
+          <input type='text'className='w-full h-[40px] border-2 border-[rgba(0,0,0,0.1)] rounded-md focus:border-[rgba(0,0,0,0.7)] focus:outline-none px-3'
+          />
+        </div>
+
+        <div className='form-group mt-2'>
           <h4>Email</h4>
           <input type='email'className='w-full h-[40px] border-2 border-[rgba(0,0,0,0.1)] rounded-md focus:border-[rgba(0,0,0,0.7)] focus:outline-none px-3'
           />
@@ -168,7 +183,7 @@ const Login = () => {
         <Link to="/forgot-password" className='text-blue-700 font-[600] text-[16px] hover:underline'>Forget Password?</Link>
         </div>
         <div className='flex items-center justify-center w-full rounded-md'>
-        <Button className='btn-blue w-full'>Sign In</Button>
+        <Button className='btn-blue w-full'>Sign Up</Button>
         </div>
       </form>
 
@@ -181,5 +196,5 @@ const Login = () => {
     );
   };
   
-  export default Login;
+  export default Signup;
   
