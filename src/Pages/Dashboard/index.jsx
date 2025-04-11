@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Dashboardbox from '../../Components/DashboardBoxes'
 import { FaHeart } from "react-icons/fa";
 import { Button } from '@mui/material';
@@ -17,6 +17,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { BiExport } from "react-icons/bi";
 import ChartsSection from '../Charts';
+import { Mycontext } from '../../App';
 
 
 
@@ -78,7 +79,7 @@ const Dashboard = () => {
     }
   ];
 
-  
+  const context = useContext(Mycontext)
   return (
     <>
     <div className='dashboardWrapper w-full h-full flex flex-col '>
@@ -89,7 +90,11 @@ const Dashboard = () => {
   Cameron </h1>
   <p>here's what happening on your store today. see the statistics at once</p>
 
-  <Button className='btn-blue !capitalize !mt-5'><BsPlusLg />Add Product</Button>
+  <Button className='btn-blue !capitalize !mt-5'  onClick={() =>
+                context.setisScreenPanelopen({
+                  open: true,
+                  model:'Add Product'
+                })}><BsPlusLg />Add Product</Button>
   </div>
 
   <img src='/shop.jpg' className='w-[300px]'/>
@@ -188,7 +193,11 @@ const Dashboard = () => {
       </div>
       <div className='col w-[25%] ml-auto mt-8 flex items-center gap-3'>
         <Button className='btn-blue  btn-sm  !bg-green-600'>Export</Button>
-        <Button className='btn-sm btn-blue'>Add Products</Button>
+        <Button className='btn-sm btn-blue' onClick={() =>
+                context.setisScreenPanelopen({
+                  open: true,
+                  model:'Add Product'
+                })}>Add Products</Button>
       </div>
      </div>
 
