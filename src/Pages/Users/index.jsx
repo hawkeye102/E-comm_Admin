@@ -9,6 +9,7 @@ import { Search } from '@mui/icons-material';
 import { InputAdornment} from '@mui/material';
 import { MdMarkEmailRead } from "react-icons/md";
 import { FaPhoneVolume } from "react-icons/fa6";
+import { FaRegCalendarCheck } from "react-icons/fa";
 
 import {
   TextField,Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
@@ -25,6 +26,7 @@ import {
       Name:"Rajat Dalal",
       Mail:"Dalalrajat@gmail.com",
       PhoneNumber: "7890345788",
+      CreatedAT:"12/10/25"
       
     },
     {
@@ -33,6 +35,7 @@ import {
         Name:"Users Name",
         Mail:"Users Email",
         PhoneNumber: "Users ph",
+        CreatedAT:"12/10/25"
         
       },
       {
@@ -41,6 +44,7 @@ import {
         Name:"Users Name",
         Mail:"Users Email",
         PhoneNumber: "Users ph",
+        CreatedAT:"12/10/25"
         
       },
       {
@@ -49,6 +53,7 @@ import {
         Name:"Users Name",
         Mail:"Users Email",
         PhoneNumber: "Users ph",
+        CreatedAT:"12/10/25"
         
       },
   ];
@@ -124,6 +129,7 @@ const Users = () => {
                   <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
                   <TableCell sx={{ whiteSpace: 'nowrap',fontWeight: 'bold' }}>Mail</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>PhoneNumber</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>CreatedAT</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
@@ -167,6 +173,11 @@ const Users = () => {
                           <TableCell><Box display="flex" alignItems="center" gap={1}>
                       < FaPhoneVolume size={18} style={{ color: '#2962ff' }} />
                               {row.PhoneNumber}
+                          </Box></TableCell>
+
+                          <TableCell><Box display="flex" alignItems="center" gap={1}>
+                      < FaRegCalendarCheck size={18} style={{ color: '#DC143C' }} />
+                              {row.CreatedAT}
                           </Box></TableCell>
                    
                      

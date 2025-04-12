@@ -17,16 +17,11 @@ const Mycontext = createContext();
 
 
 import Dialog from '@mui/material/Dialog';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemButton from '@mui/material/ListItemButton';
-import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { IoClose } from "react-icons/io5";
-import Slide from '@mui/material/Slide';
 import { Button } from '@mui/material'
 import CategoryList from "./Pages/Category/addcategory";
 import AddCategory1 from "./Pages/Category/add1";
@@ -34,6 +29,10 @@ import SubCategoryList from "./Pages/Category/addSubcategory copy";
 import AddSubCategory1 from "./Pages/Category/addSub1";
 import Users from "./Pages/Users";
 import Order from "./Pages/Orders/order";
+import ForgetPassword from "./Pages/ForgotPassword";
+
+import VerifyUI from "./Pages/VerifyAccount";
+import ChangePassword from "./Pages/ChangePassword";
 
 const Layout = () => {
   const { issidebaropen } = React.useContext(Mycontext);
@@ -73,7 +72,7 @@ const Layout = () => {
 
 const App = () => {
   const [issidebaropen, setIssidebaropen] = useState(true);
-  const [isLogin,setisLogin] = useState()
+  const [isLogin,setisLogin] = useState(false)
   const [isScreenPanelopen,setisScreenPanelopen] =useState({
     open:false,
     model:''
@@ -96,6 +95,9 @@ const App = () => {
     },
     { path: "/sign-up", element: <Signup /> },
     { path: "/login", element: <Login /> },
+    { path: "/forgot-password", element: <ForgetPassword/> },
+    { path: "/verify-account", element: <VerifyUI/> },
+    { path: "/change-password", element: <ChangePassword/> },
   ]);
 
   const values={
