@@ -30,6 +30,8 @@ import Slide from '@mui/material/Slide';
 import { Button } from '@mui/material'
 import CategoryList from "./Pages/Category/addcategory";
 import AddCategory1 from "./Pages/Category/add1";
+import SubCategoryList from "./Pages/Category/addSubcategory copy";
+import AddSubCategory1 from "./Pages/Category/addSub1";
 
 const Layout = () => {
   const { issidebaropen } = React.useContext(Mycontext);
@@ -83,7 +85,8 @@ const App = () => {
         { index: true, element: <Dashboard /> }, // homepage default
         { path: "product", element: <Product /> },
         { path: "Homeslider/list", element: <HomeSlider/> },
-        { path: "Category/list", element: <CategoryList/> }, 
+        { path: "Category/list", element: <CategoryList/> },
+        { path: "SubCategory/list", element: <SubCategoryList/> }, 
        
       ],
     },
@@ -147,8 +150,12 @@ const App = () => {
           isScreenPanelopen?.model ==='Add Home Slide' && <AddHomeSlide/>
         }
 
-{
+        {
           isScreenPanelopen?.model ==='Add New Category' && <AddCategory1/>
+        }
+
+{
+          isScreenPanelopen?.model ==='Add New Sub Category' && <AddSubCategory1/>
         }
       </Dialog>
     </Mycontext.Provider>

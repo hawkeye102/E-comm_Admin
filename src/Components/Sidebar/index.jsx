@@ -172,7 +172,7 @@ const Sidebar = () => {
             </li>
 
             <li className='w-full'>
-            <Link to='/category/subcat'>
+            <Link to='SubCategory/list'>
               <Button className='!text-[rgba(0,0,0,0.8)] !capatalize w-full !text-[12px] 
               !pl-10 !font-[400] !justify-start !gap-1'>
                 <span className='!block !w-[5px] !h-[5px] !rounded-full  !bg-black '></span>
@@ -182,13 +182,16 @@ const Sidebar = () => {
             </li>
 
             <li className='w-full'>
-            <Link to='/category/subcat/add'>
+           
               <Button className='!text-[rgba(0,0,0,0.8)] !capatalize w-full !text-[12px] 
-              !pl-10 !font-[400] !justify-start !gap-1'>
+              !pl-10 !font-[400] !justify-start !gap-1'onClick={()=>context.setisScreenPanelopen({
+                open:true,
+                model:'Add New Sub Category'
+              })}>
                 <span className='!block !w-[5px] !h-[5px] !rounded-full  !bg-black '></span>
                 Add  Sub Cat List
               </Button>
-              </Link>
+              
             </li>
           </ul>
         </Collapse>
