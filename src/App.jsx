@@ -28,7 +28,8 @@ import Typography from '@mui/material/Typography';
 import { IoClose } from "react-icons/io5";
 import Slide from '@mui/material/Slide';
 import { Button } from '@mui/material'
-
+import CategoryList from "./Pages/Category/addcategory";
+import AddCategory1 from "./Pages/Category/add1";
 
 const Layout = () => {
   const { issidebaropen } = React.useContext(Mycontext);
@@ -81,7 +82,8 @@ const App = () => {
       children: [
         { index: true, element: <Dashboard /> }, // homepage default
         { path: "product", element: <Product /> },
-        { path: "Homeslider/list", element: <HomeSlider/> }, 
+        { path: "Homeslider/list", element: <HomeSlider/> },
+        { path: "Category/list", element: <CategoryList/> }, 
        
       ],
     },
@@ -141,8 +143,12 @@ const App = () => {
           isScreenPanelopen?.model ==='Add Product' && <AddProducts/>
         }
 
-{
+        {
           isScreenPanelopen?.model ==='Add Home Slide' && <AddHomeSlide/>
+        }
+
+{
+          isScreenPanelopen?.model ==='Add New Category' && <AddCategory1/>
         }
       </Dialog>
     </Mycontext.Provider>
