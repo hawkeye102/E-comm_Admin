@@ -32,6 +32,7 @@ import CategoryList from "./Pages/Category/addcategory";
 import AddCategory1 from "./Pages/Category/add1";
 import SubCategoryList from "./Pages/Category/addSubcategory copy";
 import AddSubCategory1 from "./Pages/Category/addSub1";
+import Users from "./Pages/Users";
 
 const Layout = () => {
   const { issidebaropen } = React.useContext(Mycontext);
@@ -86,7 +87,8 @@ const App = () => {
         { path: "product", element: <Product /> },
         { path: "Homeslider/list", element: <HomeSlider/> },
         { path: "Category/list", element: <CategoryList/> },
-        { path: "SubCategory/list", element: <SubCategoryList/> }, 
+        { path: "SubCategory/list", element: <SubCategoryList/> },
+        { path: "users", element: <Users/> }, 
        
       ],
     },
