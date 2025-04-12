@@ -10,6 +10,8 @@ import Product from "./Pages/Products";
 import { Outlet } from "react-router-dom";
 
 import AddProducts from "./Pages/Products/AddProduct";
+import HomeSlider from "./Pages/Homebanner";
+import AddHomeSlide from "./Pages/Homebanner/AddHomeSlide";
 
 const Mycontext = createContext();
 
@@ -78,8 +80,9 @@ const App = () => {
       element: <Layout />,
       children: [
         { index: true, element: <Dashboard /> }, // homepage default
-        { path: "product", element: <Product /> }, // /product page
-        // Add more like { path: "orders", element: <Orders /> } etc.
+        { path: "product", element: <Product /> },
+        { path: "Homeslider/list", element: <HomeSlider/> }, 
+       
       ],
     },
     { path: "/sign-up", element: <Signup /> },
@@ -136,6 +139,10 @@ const App = () => {
         </AppBar>
         {
           isScreenPanelopen?.model ==='Add Product' && <AddProducts/>
+        }
+
+{
+          isScreenPanelopen?.model ==='Add Home Slide' && <AddHomeSlide/>
         }
       </Dialog>
     </Mycontext.Provider>
