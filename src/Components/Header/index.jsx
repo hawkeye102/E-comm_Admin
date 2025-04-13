@@ -13,8 +13,9 @@ import { AiOutlineMenuUnfold } from "react-icons/ai";
 import { FaRegBell } from "react-icons/fa";
 import { useState } from 'react';
 import {Mycontext} from "../../App"
-import {Link} from 'react-router-dom';
-
+import {Link,useNavigate} from 'react-router-dom';
+import { useEffect } from 'react';
+import { postData } from '../../../utils/api';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -27,12 +28,18 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const Header = () => {
   const [anchormyAcc, setanchormyAcc] = React.useState(null);
+  const [userName, setUserName] = useState('');
+const [userEmail, setUserEmail] = useState('');
+
   const openmyAcc = Boolean(anchormyAcc);
 
+  useEffect(() => {
+    setUserName(localStorage.getItem('userName') || '');
+    setUserEmail(localStorage.getItem('userEmail') || '');
+  }, []);
   
+  const history = useNavigate()
   
-    
-
   const handleClickmyAcc = (event) => {
     setanchormyAcc(event.currentTarget);
   };
@@ -41,7 +48,26 @@ const Header = () => {
   };
   const context =useContext(Mycontext)
 
-  
+  const logout=()=>{
+    setanchormyAcc(null);
+
+    postData("/api/users/logout").then((res)=>{
+console.log(res)
+
+ // Clear localStorage
+ localStorage.removeItem("accessToken");
+ localStorage.removeItem("refreshToken");
+ localStorage.removeItem("userEmail");
+ localStorage.removeItem("userName");
+ localStorage.removeItem("userMobile");
+ localStorage.removeItem("useravatar");
+
+ context.setisLogin(false);
+ // Refresh the page or trigger a state change in Navbar
+ history('/'); // OR use context/state management
+ 
+    });
+  }
 
   return (
     <header className={`w-full h-auto ${context.issidebaropen ? 'pl-64' : 'pl-4'} pr-5  transition-all duration-300 ease-in-out
@@ -113,8 +139,8 @@ const Header = () => {
       </div>
 
       <div className='info'>
-        <h3 className='text-[16px] font-bold !leading-5'>Anglena Gotelli</h3>
-        <p className='text-[13px] font-[400] opacity-70'>admin_01@ecomm.com</p>
+        <h3 className='text-[16px] font-bold !leading-5'>{userName || 'Guest User'}</h3>
+        <p className='text-[13px] font-[400] opacity-70'>{userEmail || 'no-email@domain.com'}</p>
 
       </div>
         </div>
@@ -132,7 +158,7 @@ const Header = () => {
         </MenuItem>
 
         
-        <MenuItem onClick={handleClosemyAcc} className='flex items-center justify-center gap-3'>
+        <MenuItem onClick={logout} className='flex items-center justify-center gap-3'>
         <AiOutlineLogout />
         <span className='text-[16px]'>Sign Out</span>
         </MenuItem>
@@ -142,7 +168,7 @@ const Header = () => {
        : 
        
        <Link to='/sign-up'>
-        <Button className='btn-blue btn-sm !rounded-full' onClick={()=>navigate('/sign-up')}>Sign up
+        <Button className='btn-blue btn-sm !rounded-full'>Sign up
           
         </Button>
        </Link>

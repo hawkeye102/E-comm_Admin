@@ -1,5 +1,6 @@
 import { Button } from '@mui/material'
-import React from 'react'
+import React, { useContext, useState } from "react";
+
 import {Link, NavLink} from 'react-router-dom'
 import { MdOutlineLogin } from "react-icons/md";
 import { FaUserPlus } from "react-icons/fa";
@@ -9,11 +10,28 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { FaRegEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
+import { postData } from "../../../utils/api";
+import {Mycontext} from "../../App";
+import CircularProgress from '@mui/material/CircularProgress';
+import {useNavigate } from 'react-router-dom';
+
 
 const Login = () => {
     const [loadinggoogle, setLoadinggoogle] = React.useState(false);
     const [loadingInsta, setLoadingInsta] = React.useState(false);
     const [isPassword,setIsPassword] = React.useState(false);
+    const [isLoading,setisLoading] = useState(false)
+
+    const [Formfields,setFormfields] =useState({
+      email:'',
+      password:''
+     
+  })
+
+  const context=useContext(Mycontext)
+    const history=useNavigate()
+
+
     function handleClickGoogle() {
         setLoadinggoogle(true);
     }
@@ -21,6 +39,102 @@ const Login = () => {
     function handleClickInsta() {
       setLoadingInsta(true);
   }
+  const onChangeInput=(e)=>{
+    const {name,value} = e.target;
+    setFormfields(()=>{
+        return{ 
+            ...Formfields,
+        [name]:value
+    }
+       
+    })
+    
+}
+const valideValue = Object.values(Formfields).every(el=>el);// this ensures untill the fields are empty u cant register
+
+const handleSubmit=(e)=>{
+
+        e.preventDefault();
+        setisLoading(true);
+       
+
+        if(Formfields.email===""){
+            context.openAlertBox("error","please enter  email id")
+            setisLoading(false);
+        return;
+        }
+
+        if(Formfields.password===""){
+            context.openAlertBox("error","please enter password")
+            setisLoading(false);
+            return;
+        }
+        postData('/api/users/login',Formfields).then((res)=>{
+
+
+            console.log(res)
+
+            if (res?.success) { 
+                
+                // Show success alert
+                context.openAlertBox("success", "login successful!");
+                // Store user data in localStorage
+        localStorage.setItem("accessToken", res?.accessToken);
+        localStorage.setItem("refreshToken", res?.refreshToken);
+        localStorage.setItem("userName", res?.name);
+        localStorage.setItem("userEmail", res?.email);
+        localStorage.setItem("userMobile", res?.mobile);  
+        localStorage.setItem("userAvatar", res?.avatar);
+                
+
+        // Verify stored values
+        console.log("Stored mobile:", localStorage.getItem("usermobile"));
+        console.log("Stored avatar:", localStorage.getItem("useravatar"));
+  console.log("Stored Name:", localStorage.getItem("userName"));
+  console.log("Stored Email:", localStorage.getItem("userEmail"));
+  console.log("Stored AccessToken:", localStorage.getItem("accessToken"));
+
+                setFormfields({ email: "", password: "" });
+
+
+               //  Check if tokens exist before storing
+  if (res?.accessToken && res?.refreshToken) {
+    localStorage.setItem("accessToken", res.accessToken);
+    localStorage.setItem("refreshToken", res.refreshToken);
+    console.log("Tokens stored successfully!");
+  } else {
+    console.error("Tokens missing in API response!");
+  }
+
+  
+
+               // Redirect user to home page
+              
+                history('/');  // Redirect to Home Page
+               
+            context.setisLogin(true)
+            }
+            else if (res?.message?.toLowerCase().includes("already")) {  
+                //  If API returns "user already exists"
+                context.openAlertBox("error", "User already registered!");
+            } else {
+                // Show error alert when user is already registered
+                context.openAlertBox("error", res?.message || "loginfailed! Try again.");
+            }
+            
+        })
+        .catch((err) => {
+            console.error("login failed:", err);
+            context.openAlertBox("error", "Network error! Please try again.");
+        })
+        .finally(() => {
+            setisLoading(false);
+        });
+            
+           
+        
+
+    }
     return (
       <section className="relative w-full h-screen">
         {/* Fixed Header */}
@@ -143,18 +257,29 @@ const Login = () => {
           <span className='flex items-center w-[100px] h-[2px] bg-slate-300'></span>
         </div>
 
-        <form className='w-full  px-8'>
+        <form className='w-full  px-8' onSubmit={handleSubmit}>
         <div className='form-group mt-2'>
           <h4>Email</h4>
-          <input type='email'className='w-full h-[40px] border-2 border-[rgba(0,0,0,0.1)] rounded-md focus:border-[rgba(0,0,0,0.7)] focus:outline-none px-3'
+          <input type='email'
+          className='w-full h-[40px] border-2 border-[rgba(0,0,0,0.1)] rounded-md focus:border-[rgba(0,0,0,0.7)] focus:outline-none px-3'
+          name="email"
+                   value={Formfields.email}
+                   disabled={isLoading===true ? true :false}
+                   onChange={onChangeInput}
           />
         </div>
 
         <div className='form-group mt-2'>
           <h4>Password</h4>
           <div className="relative">
-          <input type={isPassword===false?'password':'text'} className='w-full h-[40px] border-2 rounded-md border-[rgba(0,0,0,0.1)] 
-          focus:border-[rgba(0,0,0,0.7)] focus:outline-none px-3'/>
+          <input type={isPassword===false?'password':'text'} 
+          className='w-full h-[40px] border-2 rounded-md border-[rgba(0,0,0,0.1)] 
+          focus:border-[rgba(0,0,0,0.7)] focus:outline-none px-3'
+          name="password"
+                  value={Formfields.password}
+                  disabled={isLoading===true ? true :false}
+                  onChange={onChangeInput}
+          />
           <Button className='!absolute top-1/2 right-2 -translate-y-1/2 !rounded-full !w-[30px] !h-[30px] !min-w-[30px] !bg-transparent !p-0'
        onClick={()=>setIsPassword (!isPassword)}>   
       {isPassword===true ? <FaRegEye className='text-black'/> :<FaEyeSlash className='text-black'/>}
@@ -168,7 +293,16 @@ const Login = () => {
         <Link to="/forgot-password" className='text-blue-700 font-[600] text-[16px] hover:underline'>Forget Password?</Link>
         </div>
         <div className='flex items-center justify-center w-full rounded-md'>
-        <Button className='btn-blue w-full'>Sign In</Button>
+        <button 
+       type="submit" 
+       disabled={!valideValue} 
+       className={`flex items-center justify-center gap-2 font-[400] !text-center !mt-5 bg-red-400 text-white rounded-lg shadow-lg !w-full !h-[40px] mb-3
+         transition-all duration-300 ease-in-out 
+         ${valideValue ? "hover:bg-black hover:shadow-xl" : "opacity-70"}`}
+     >
+       {isLoading && <CircularProgress color="inherit" className="!w-[20px] !h-[20px]" />} 
+       Login
+     </button>
         </div>
       </form>
 

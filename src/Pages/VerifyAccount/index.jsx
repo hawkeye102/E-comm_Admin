@@ -3,8 +3,7 @@ import OtpBox from "../OtpBox";
 import { useState } from "react";
 import { Mycontext } from "../../App";
 import { useEffect } from "react";
-import { postData } from "../../../Utils/api";
-
+import { postData } from "../../../utils/api";
 const VerifyUI = () => {
   const [otp,setOtp]=useState("")
   const [email, setEmail] = useState("");

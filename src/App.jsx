@@ -14,6 +14,7 @@ import HomeSlider from "./Pages/Homebanner";
 import AddHomeSlide from "./Pages/Homebanner/AddHomeSlide";
 
 import toast, { Toaster } from 'react-hot-toast';
+import { useEffect } from "react";
 
 const Mycontext = createContext();
 
@@ -113,6 +114,17 @@ const App = () => {
     { path: "/change-password", element: <ChangePassword/> },
   ]);
 
+  useEffect(()=>{
+    const token = localStorage.getItem('accessToken');
+    if(token!==undefined && token!== null && token !==""){
+      setisLogin(true)
+    }else{
+      setisLogin(false)
+    }
+    
+    
+    },[isLogin])
+    
   const values={
     issidebaropen,
      setIssidebaropen,
