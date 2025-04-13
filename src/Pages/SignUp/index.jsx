@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { postData } from '../../../Utils/api';
 import { useState } from 'react';
 import { Mycontext } from '../../App';
+import { useEffect } from 'react';
 const Signup = () => {
     const [loadinggoogle, setLoadinggoogle] = React.useState(false);
     const [loadingInsta, setLoadingInsta] = React.useState(false);
@@ -89,7 +90,7 @@ const Signup = () => {
             setFormfields({ name: "", email: "", password: "" });
 
            // Redirect user to Verify OTP page, passing email in query params
-    navigate(`/verify?email=${encodeURIComponent(Formfields.email)}`);
+    navigate(`/verify-account?email=${encodeURIComponent(Formfields.email)}`);
         }
         else if (res?.message?.toLowerCase().includes("already")) {  
             //  If API returns "user already exists"
