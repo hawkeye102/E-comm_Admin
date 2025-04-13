@@ -13,6 +13,8 @@ import AddProducts from "./Pages/Products/AddProduct";
 import HomeSlider from "./Pages/Homebanner";
 import AddHomeSlide from "./Pages/Homebanner/AddHomeSlide";
 
+import toast, { Toaster } from 'react-hot-toast';
+
 const Mycontext = createContext();
 
 
@@ -78,6 +80,17 @@ const App = () => {
     model:''
   })
 
+  const openAlertBox=(status,msg)=>{
+    if(status==="success"){
+      toast.success(msg);
+    }
+    if(status==="error"){
+      toast.error(msg);
+    }
+   
+
+  }
+
   const router = createBrowserRouter([
     {
     path: "/",
@@ -106,7 +119,8 @@ const App = () => {
     isLogin,
     setisLogin,
     isScreenPanelopen,
-    setisScreenPanelopen
+    setisScreenPanelopen,
+    openAlertBox
 
   }
   return (
@@ -163,7 +177,10 @@ const App = () => {
 {
           isScreenPanelopen?.model ==='Add New Sub Category' && <AddSubCategory1/>
         }
+
+
       </Dialog>
+      <Toaster />
     </Mycontext.Provider>
   );
 };
