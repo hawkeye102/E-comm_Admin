@@ -1,5 +1,5 @@
 import { Button } from '@mui/material'
-import React from 'react'
+import React, { useContext, useState } from "react";
 import {Link, NavLink} from 'react-router-dom'
 import { MdOutlineLogin } from "react-icons/md";
 import { FaUserPlus } from "react-icons/fa";
@@ -9,10 +9,73 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { FaRegEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
+import { Mycontext } from '../../App';
+import {useNavigate } from 'react-router-dom';
+import CircularProgress from '@mui/material/CircularProgress';
+import { postData } from '../../../utils/api';
 
 const ChangePassword = () => {
    
     const [isPassword,setIsPassword] = React.useState(false);
+    const [isPassword2,setIsPassword2] = React.useState(false);
+    const [isLoading,setisLoading] = useState(false)
+
+    const [Formfields,setFormfields] =useState({
+           
+      email:localStorage.getItem("userEmail"),
+     newpassword:'',
+     confirmpassword:''
+  })
+  console.log('mail is found',localStorage.getItem("userEmail"))
+        const context=useContext(Mycontext)
+            const history=useNavigate()
+
+
+            const onChangeInput=(e)=>{
+              const {name,value} = e.target;
+              setFormfields(()=>{
+                  return{ 
+                      ...Formfields,
+                  [name]:value
+              }
+                 
+              })
+          }
+          
+              const handleSubmit=(e)=>{
+              
+                      e.preventDefault();
+                      setisLoading(true);
+                     
+              
+                      if(Formfields.newpassword===""){
+                          setisLoading(false);
+                          context.openAlertBox("error","please enter  password")
+                          
+                      return;
+                      }
+              
+                      if(Formfields.confirmpassword===""){
+                          setisLoading(false)
+                          context.openAlertBox("error","please enter confirm password")
+                          
+                          return;
+                      }
+                      if(Formfields.newpassword!==Formfields.confirmpassword){
+                          setisLoading(false)
+                          context.openAlertBox("error","password doesn't match")
+                         
+                          return;
+                      }
+                      
+                      postData("/api/users/reset-password",Formfields).then((res)=>{
+                          console.log(res)
+                          if (res?.message) {  
+                            context.openAlertBox("success", "Password Updated Successfully!");
+      
+                          history('/login')
+               } })
+                  }
    
   
     return (
@@ -78,21 +141,38 @@ const ChangePassword = () => {
         <br/>
 
        
-        <form className='w-full flex flex-col items-center px-8'>
-        <div className='form-group mt-2 w-[400px]'>
-          <h4>New Password</h4>
-          <input type='email'className='w-full h-[40px] border-2 border-[rgba(0,0,0,0.1)] rounded-md focus:border-[rgba(0,0,0,0.7)] focus:outline-none px-3'
-          />
+        <form className='w-full flex flex-col items-center px-8'onSubmit={ handleSubmit}>
+        <div className='form-group mt-2 w-[400px] mb-3'>
+          <h4> New Password</h4>
+          <div className="relative">
+          <input type={isPassword===false?'password':'text'} 
+          className='w-full h-[40px] border-2 rounded-md border-[rgba(0,0,0,0.1)] 
+          focus:border-[rgba(0,0,0,0.7)] focus:outline-none px-3'
+          name="newpassword"
+          value={Formfields.newpassword}
+          disabled={isLoading===true ? true :false}
+          onChange={onChangeInput} />
+          <Button className='!absolute top-1/2 right-2 -translate-y-1/2 !rounded-full !w-[30px] !h-[30px] !min-w-[30px] !bg-transparent !p-0'
+       onClick={()=>setIsPassword(!isPassword)}>   
+      {isPassword===true ? <FaRegEye className='text-black'/> :<FaEyeSlash className='text-black'/>}
+          
+          </Button>
+          </div>
         </div>
 
         <div className='form-group mt-2 w-[400px] mb-3'>
           <h4> Confirm Password</h4>
           <div className="relative">
-          <input type={isPassword===false?'password':'text'} className='w-full h-[40px] border-2 rounded-md border-[rgba(0,0,0,0.1)] 
-          focus:border-[rgba(0,0,0,0.7)] focus:outline-none px-3'/>
+          <input type={isPassword2===false?'password':'text'} 
+          className='w-full h-[40px] border-2 rounded-md border-[rgba(0,0,0,0.1)] 
+          focus:border-[rgba(0,0,0,0.7)] focus:outline-none px-3'
+          name="confirmpassword"
+          value={Formfields.confirmpassword}
+          disabled={isLoading===true ? true :false}
+          onChange={onChangeInput}/>
           <Button className='!absolute top-1/2 right-2 -translate-y-1/2 !rounded-full !w-[30px] !h-[30px] !min-w-[30px] !bg-transparent !p-0'
-       onClick={()=>setIsPassword (!isPassword)}>   
-      {isPassword===true ? <FaRegEye className='text-black'/> :<FaEyeSlash className='text-black'/>}
+       onClick={()=>setIsPassword2(!isPassword2)}>   
+      {isPassword2===true ? <FaRegEye className='text-black'/> :<FaEyeSlash className='text-black'/>}
           
           </Button>
           </div>
@@ -100,7 +180,16 @@ const ChangePassword = () => {
 
         
         <div className='flex items-center justify-center w-full rounded-md gap-3'>
-        <Button className='btn-blue w-full !mt-3'>Change Password</Button>
+        <button 
+                                  type="submit" 
+                                  // disabled={!valideValue} 
+                                  className={`flex items-center justify-center gap-2 font-[400] !text-center !mt-5 bg-red-400 text-white rounded-lg shadow-lg !w-full !h-[40px] mb-3
+                                    transition-all duration-300 ease-in-out 
+                                   "hover:bg-black hover:shadow-xl"}`}
+                                >
+                                  {isLoading && <CircularProgress color="inherit" className="!w-[20px] !h-[20px]" />} 
+                                  Change Password
+                                </button>
         </div>
       </form>
 

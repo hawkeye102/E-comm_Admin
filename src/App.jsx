@@ -109,7 +109,7 @@ const App = () => {
     },
     { path: "/sign-up", element: <Signup /> },
     { path: "/login", element: <Login /> },
-    { path: "/forgot-password", element: <ForgetPassword/> },
+    { path: "/forget-password", element: <ForgetPassword/> },
     { path: "/verify-account", element: <VerifyUI/> },
     { path: "/change-password", element: <ChangePassword/> },
   ]);

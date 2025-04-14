@@ -47,7 +47,7 @@ const VerifyUI = () => {
             localStorage.removeItem("forgotPasswordFlow");
   
            
-            window.location.href = forgotPasswordFlow ? "/forget-password" : "/login";
+            window.location.href = forgotPasswordFlow ? "/change-password" : "/login";
         } else {
             alert(`Error: ${res.message}`);
         }

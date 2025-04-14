@@ -11,7 +11,7 @@ import { FaRegEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from "react-router-dom";
-import { postData } from '../../../Utils/api';
+import { postData } from '../../../utils/api';
 import { useState } from 'react';
 import { Mycontext } from '../../App';
 import { useEffect } from 'react';
@@ -291,7 +291,7 @@ const Signup = () => {
 
         <div className='form-group mt-2 flex items-center justify-between'>
         <FormControlLabel control={<Checkbox defaultChecked />} label="Remember me" />
-        <Link to="/forgot-password" className='text-blue-700 font-[600] text-[16px] hover:underline'>Forget Password?</Link>
+        
         </div>
         <div className='flex items-center justify-center w-full rounded-md'>
 

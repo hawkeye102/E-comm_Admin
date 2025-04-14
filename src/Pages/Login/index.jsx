@@ -52,6 +52,48 @@ const Login = () => {
 }
 const valideValue = Object.values(Formfields).every(el=>el);// this ensures untill the fields are empty u cant register
 
+const forgetPassword=()=> {
+  if(Formfields.email===""){
+      context.openAlertBox("error","please enter  email id")
+   return false;
+  }
+
+  //calling the post data api
+  postData('/api/users/forgot-password',{email:Formfields.email})
+  .then((res)=>{
+      console.log("forgot password api response",res);
+
+      if (res?.message?.toLowerCase().includes("otp sent")) {  
+          context.openAlertBox("success", "OTP sent to your email!");
+          localStorage.setItem("userEmail", Formfields.email);
+          console.log("Stored User Email:", Formfields.email);
+          
+          // a flag to check if it is in forgot password or not 
+          localStorage.setItem("forgotPasswordFlow", "true"); 
+         
+           setTimeout(()=>{
+              history("/verify-account");
+           },[300])
+              
+         
+      } else {
+          context.openAlertBox("error", res?.message || "Failed to send OTP. Try again!");
+      }
+  
+   
+  }).catch((err)=>{
+      console.log("Error sending forget request")
+      context.openAlertBox("error", "Network error  ! please try again") 
+
+
+  })
+ 
+ 
+  
+
+}
+
+
 const handleSubmit=(e)=>{
 
         e.preventDefault();
@@ -290,7 +332,8 @@ const handleSubmit=(e)=>{
 
         <div className='form-group mt-2 flex items-center justify-between'>
         <FormControlLabel control={<Checkbox defaultChecked />} label="Remember me" />
-        <Link to="/forgot-password" className='text-blue-700 font-[600] text-[16px] hover:underline'>Forget Password?</Link>
+        <a onClick={forgetPassword}
+        className='text-blue-700 font-[600] text-[16px] hover:underline cursor-pointer'>Forget Password?</a>
         </div>
         <div className='flex items-center justify-center w-full rounded-md'>
         <button 
