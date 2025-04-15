@@ -146,11 +146,13 @@ console.log(res)
         </div>
         </MenuItem>
         <Divider />
-
+         
+         <Link to='/profile'>
         <MenuItem onClick={handleClosemyAcc} className='flex items-center justify-center gap-3'>
         <FaRegUser />
         <span className='text-[16px]'>Profile</span>
         </MenuItem>
+        </Link>
 
         <MenuItem onClick={handleClosemyAcc} className='flex items-center justify-center gap-3'>
         <FaRegUser />

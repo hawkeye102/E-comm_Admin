@@ -15,6 +15,7 @@ import AddHomeSlide from "./Pages/Homebanner/AddHomeSlide";
 
 import toast, { Toaster } from 'react-hot-toast';
 import { useEffect } from "react";
+import Profile from "./Pages/Profile";
 
 const Mycontext = createContext();
 
@@ -104,6 +105,7 @@ const App = () => {
         { path: "SubCategory/list", element: <SubCategoryList/> },
         { path: "users", element: <Users/> }, 
         { path: "orders", element: <Order/> }, 
+        { path: "/profile", element: <Profile/> },
        
       ],
     },
@@ -112,6 +114,7 @@ const App = () => {
     { path: "/forget-password", element: <ForgetPassword/> },
     { path: "/verify-account", element: <VerifyUI/> },
     { path: "/change-password", element: <ChangePassword/> },
+   
   ]);
 
   useEffect(()=>{
