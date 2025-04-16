@@ -37,6 +37,7 @@ import ForgetPassword from "./Pages/ForgotPassword";
 
 import VerifyUI from "./Pages/VerifyAccount";
 import ChangePassword from "./Pages/ChangePassword";
+import AddAddress from "./Pages/Address";
 
 const Layout = () => {
   const { issidebaropen } = React.useContext(Mycontext);
@@ -189,8 +190,11 @@ const App = () => {
           isScreenPanelopen?.model ==='Add New Category' && <AddCategory1/>
         }
 
-{
+        {
           isScreenPanelopen?.model ==='Add New Sub Category' && <AddSubCategory1/>
+        }
+        {
+          isScreenPanelopen?.model ==='Add Address' && <AddAddress/>
         }
 
 

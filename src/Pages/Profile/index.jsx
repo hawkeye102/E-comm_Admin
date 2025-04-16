@@ -12,6 +12,7 @@ import  Button  from "@mui/material/Button";
  import 'react-international-phone/style.css';
  import { UpdateData } from '../../../utils/api';
  import ChangePassword from '../ChangePassword';
+ import { IoAddSharp } from "react-icons/io5";
 
 const Profile = () => {
     const [preview, setpreview] = useState([])
@@ -176,7 +177,7 @@ const Profile = () => {
       
   return (
     <>
-    <div className='card flex items-center w-[75%] my-4 mt-4 shadow-md rounded-md h-auto bg-white'>
+    <div className='card flex items-center w-[60%] my-4 mt-4 shadow-md rounded-md h-auto bg-white'>
        <div className="w-full p-3 flex-items  justify-center flex-col">
 
         <div className='flex justify-between'>
@@ -275,7 +276,15 @@ overflow-hidden mb-4 relative group ml-3 !flex items-center !justify-center !bg-
 
                 </div>
 
+
                 <br/>
+                <div className=' w-full flex items-center justify-center'> 
+                  <Button className='btn-blue btn-sm w-full gap-2' onClick={() =>
+                context.setisScreenPanelopen({
+                  open: true,
+                  model:'Add Address'
+                })}>
+                    <IoAddSharp className='text-[20px]'/>ADD ADDRESS</Button></div>
                 <div className="flex gap-4">
  <button 
         type="submit" 

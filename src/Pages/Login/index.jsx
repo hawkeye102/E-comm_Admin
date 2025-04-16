@@ -117,6 +117,7 @@ const handleSubmit=(e)=>{
             console.log(res)
 
             if (res?.success) { 
+             
                 
                 // Show success alert
                 context.openAlertBox("success", "login successful!");
@@ -127,7 +128,7 @@ const handleSubmit=(e)=>{
         localStorage.setItem("userEmail", res?.email);
         localStorage.setItem("userMobile", res?.mobile);  
         localStorage.setItem("userAvatar", res?.avatar);
-                
+        
 
         // Verify stored values
         console.log("Stored mobile:", localStorage.getItem("usermobile"));

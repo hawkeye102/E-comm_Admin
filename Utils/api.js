@@ -4,11 +4,14 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 export const postData = async (url, formData) => {
     try {
+        const token = localStorage.getItem("accesstoken");
+        console.log("Token being sent:", token);
+
         console.log("Full Request URL:", `${apiUrl}${url}`);
         const response = await fetch(`${apiUrl}${url}`, { 
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem("accesstoken")}`, 
+                'Authorization': `Bearer ${localStorage.getItem("accessToken")}`, 
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(formData)
