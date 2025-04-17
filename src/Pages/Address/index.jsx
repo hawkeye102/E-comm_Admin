@@ -31,11 +31,15 @@ const  AddAddress= () => {
          const [status, setstatus] = React.useState(false);
          const [isLoading,setisLoading] = useState(false)
 
-         const handleChangeStatus= (event) => {
-          setstatus(event.target.value);
-            setFormfields({
-              status: event.target.value,})
-              };
+         const handleChangeStatus = (event) => {
+          const value = event.target.value === 'true' || event.target.value === true;
+          setstatus(value);
+          setFormfields((prev) => ({
+            ...prev,
+            status: value,
+          }));
+        };
+        
 
          
           const onChangeInput=(e)=>{
@@ -114,7 +118,7 @@ const  AddAddress= () => {
                           }
                       })
                       .catch((err) => {
-                        console.error("❌ Caught error in .catch:", err);
+                        console.error("Caught error in .catch:", err);
                         context.openAlertBox("error", err.message || "Network error! Please try again.");
                       })
                       
@@ -179,7 +183,7 @@ const  AddAddress= () => {
     <div className='mb-3 w-full'>
     <h1 className='text-[18px] font-bold mb-2'>Status</h1>
         <Select
-          value={status}
+          value={Formfields.status}
           onChange={handleChangeStatus}
           displayEmpty
           inputProps={{ 'aria-label': 'Without label' }}
