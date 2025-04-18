@@ -91,3 +91,38 @@ export const UpdateData = async (url, updatedData) => {
     }
 };
 
+export const UploadImages = async (url, filesArray) => {
+    const token = localStorage.getItem("accessToken");
+    const formData = new FormData();
+
+    
+    filesArray.forEach((file) => {
+      formData.append("images", file); 
+    });
+    console.log("Files array before appending to FormData:", filesArray);
+
+    console.log("FormData before sending:", formData);
+    for (let pair of formData.entries()) {
+        console.log(pair[0] + ": " + pair[1].name); // Log the field name and the file name
+      }
+    try {
+      const res = await fetch(apiUrl + url, {
+        method: "POST",
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          // DO NOT SET Content-Type manually for FormData
+        },
+        body: formData,
+      });
+  
+      const data = await res.json();
+      console.log("Upload Response:", data);
+      return data;
+    } catch (error) {
+      console.error("Image upload failed:", error);
+      throw error;
+    }
+  };
+  
+  
+  

@@ -153,7 +153,7 @@ const Profile = () => {
                                  localStorage.setItem("userAvatar", res.avatar);
                                  setpreview([res.avatar]);
                                   setUserAvatar(res.avatar);
-                             } else {
+                             } else { 
                                  console.error("Avatar URL is missing from the response");
                              }
                             let avatar=[];
