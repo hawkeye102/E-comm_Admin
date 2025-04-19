@@ -38,6 +38,8 @@ import ForgetPassword from "./Pages/ForgotPassword";
 import VerifyUI from "./Pages/VerifyAccount";
 import ChangePassword from "./Pages/ChangePassword";
 import AddAddress from "./Pages/Address";
+import EditCategory from "./Pages/Category/Editcategory";
+import {fetchDataFromApi } from "../Utils/api";
 
 const Layout = () => {
   const { issidebaropen } = React.useContext(Mycontext);
@@ -80,8 +82,14 @@ const App = () => {
   const [isLogin,setisLogin] = useState(false)
   const [isScreenPanelopen,setisScreenPanelopen] =useState({
     open:false,
-    model:''
+    id:''
   })
+  const [allCategories, setAllCategories] = useState([]);
+
+const refreshCategories = async () => {
+  const res = await fetchDataFromApi('/api/category');
+  setAllCategories(res?.categories || []);
+};
 
   const openAlertBox=(status,msg)=>{
     if(status==="success"){
@@ -136,7 +144,9 @@ const App = () => {
     setisLogin,
     isScreenPanelopen,
     setisScreenPanelopen,
-    openAlertBox
+    openAlertBox,
+    refreshCategories
+    
 
   }
   return (
@@ -195,6 +205,10 @@ const App = () => {
         }
         {
           isScreenPanelopen?.model ==='Add Address' && <AddAddress/>
+        }
+
+{
+          isScreenPanelopen?.model ==='Edit Category' && <EditCategory/>
         }
 
 

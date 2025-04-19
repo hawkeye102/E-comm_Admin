@@ -1,4 +1,4 @@
-import React, { useContext} from 'react'
+import React, { useContext, useEffect} from 'react'
 import { useState } from 'react'
 import { Layout, Mycontext } from '../../App'
 import Sidebar from '../../Components/Sidebar'
@@ -7,6 +7,7 @@ import { Button } from '@mui/material'
 import { IoMdAdd } from "react-icons/io";
 import { Search } from '@mui/icons-material';
 import { InputAdornment} from '@mui/material';
+import { fetchDataFromApi } from '../../../Utils/api'
 
 
 import {
@@ -17,37 +18,7 @@ import {
   import { Edit, Delete, Visibility } from '@mui/icons-material';
 
 
-  const sliderData = [
-    {
-      id: 1,
-      image: "/catSliderImages/bag.png",
-      action: `
-        
-      `,
-    },
-    {
-      id: 2,
-      image:  "/catSliderImages/beauty.png",
-      action: `
-        
-      `,
-    },
-    {
-      id: 3,
-      image:  "/catSliderImages/foot.png",
-      action: `
-       
-      `,
-    },
-    {
-      id: 4,
-      image: "/catSliderImages/jewel.png",
-      action: `
-        
-      `,
-    },
-  ];
-  
+ 
   
 const CategoryList = () => {
     const [categoryFilter, setCategoryFilter] = React.useState('');
@@ -60,9 +31,31 @@ const CategoryList = () => {
     const handleChangeRowsPerPage = (event) => {
       setRowsPerPage(parseInt(event.target.value, 10));
       setPage(0);
-
-      
     };
+
+    const [catdata,setCatdata]=useState([])
+    
+
+    useEffect(() => {
+      refreshCategoryList();
+    }, []);
+    
+    const refreshCategoryList = () => {
+      fetchDataFromApi('/api/category')
+        .then((res) => {
+          if (res && res.rootCategories) {
+            setCatdata(res.rootCategories);
+          } else {
+            console.warn("rootCategories not found in API response");
+          }
+        })
+        .catch((err) => console.error("API Fetch Error:", err));
+    };
+    
+   
+    
+
+    
     return (
       <Box sx={{ padding: 3 }}>
       {/* Top Global Buttons */}
@@ -93,12 +86,13 @@ const CategoryList = () => {
                 <TableRow>
                   <TableCell padding="checkbox"><Checkbox/></TableCell>  
                   <TableCell sx={{ fontWeight: 'bold' }}>Image</TableCell>
+                   <TableCell sx={{ fontWeight: 'bold' }}>Category Name</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {sliderData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                  <TableRow key={row.id}>
+                {catdata?.length!==0 && catdata.map((item,index) => (
+                  <TableRow key={index}>
                     <TableCell padding="checkbox"><Checkbox /></TableCell>
                     <TableCell>
            <Box display="flex" alignItems="center" gap={2}>
@@ -119,11 +113,15 @@ const CategoryList = () => {
     },
   }}
 >
-  <img src={row.image} alt="slider" />
+  <img src={item.image} alt="slider" />
+  
 </Box>
 
+
         </Box>
+        
      </TableCell>
+     <TableCell sx={{ fontWeight: 500 }}>{item.name}</TableCell>
 
                   
                     <TableCell>
@@ -132,7 +130,12 @@ const CategoryList = () => {
              <Visibility sx={{ cursor: 'pointer' }} fontSize="small"/>
              </Tooltip>
             <Tooltip title="Edit">
-            <Edit sx={{ cursor: 'pointer' }} fontSize="small"/>
+            <Edit sx={{ cursor: 'pointer' }} fontSize="small" 
+            onClick={()=>context.setisScreenPanelopen({
+          open:true,
+          model:'Edit Category',
+          id:item?._id
+        })}/>
             </Tooltip>
            <Tooltip title="Delete">
            <Delete sx={{ cursor: 'pointer', color: 'red' }} fontSize="small"/>
@@ -147,7 +150,7 @@ const CategoryList = () => {
             {/* Pagination */}
             <TablePagination
               component="div"
-              count={sliderData.length}
+              count={catdata.length}
               page={page}
               onPageChange={handleChangePage}
               rowsPerPage={rowsPerPage}

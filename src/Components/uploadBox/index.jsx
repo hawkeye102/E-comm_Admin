@@ -3,7 +3,7 @@ import { IoImagesOutline } from "react-icons/io5";
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { useState } from 'react';
 import { Mycontext } from '../../App';
-import { UploadImages } from '../../../utils/api';
+import {UploadImages} from '../../../utils/api';
 
 //TODO : IMAGE DELETION FROM CLOUDINARY NOT JUST FROM PREVIEW
 

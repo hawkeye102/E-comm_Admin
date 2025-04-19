@@ -169,3 +169,60 @@ export const UploadImages = async (url, filesArray) => {
 };
 
   
+export const fetchDataFromApi = async (url) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const fullUrl = `${apiUrl}${url}`;
+      console.log("Fetching from:", fullUrl);
+  
+      const res = await fetch(fullUrl, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+  
+      if (!res.ok) {
+        const errText = await res.text(); // log raw response
+        console.error("API returned non-OK response:", errText);
+        throw new Error(`HTTP Error ${res.status}`);
+      }
+  
+      const data = await res.json();
+      return data;
+  
+    } catch (err) {
+      console.error("API Fetch Error:", err);
+      return { success: false, message: err.message };
+    }
+  };
+  
+ 
+  export const editDataCat= async (url, updatedData) => {
+    const token = localStorage.getItem("accessToken");
+    console.log("Token being sent:", token);
+
+    const config = {
+        method: "PUT",
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'  // IMPORTANT for JSON payload
+        },
+        body: JSON.stringify(updatedData)  // Convert JS object to JSON
+    };
+    
+    try {
+        console.log("Sending Request to:", apiUrl + url);
+        console.log("Request Data:", updatedData);
+        
+        const res = await fetch(apiUrl + url, config);
+        const data = await res.json();
+
+        console.log("Response Received:", data);
+        return data;
+    } catch (error) {
+        console.error("Error in editData:", error);
+        throw error;
+    }
+};

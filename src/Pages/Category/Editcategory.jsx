@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import UploadBox from '../../Components/uploadBox';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
@@ -7,20 +7,47 @@ import { Button } from '@mui/material';
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { useState } from 'react';
 import { Mycontext } from '../../App';
-import {postDataCategory } from '../../../utils/api';
+import { editDataCat, fetchDataFromApi, } from '../../../utils/api';
 import CircularProgress from '@mui/material/CircularProgress';
 
-const  AddCategory1 = () => {
+const  EditCategory = () => {
   
-  const [uploading, setuploading] = useState(false)
+ 
    const [isLoading,setisLoading] = useState(false)
   const [formfields,setFormfields] =useState({
          name:'',
          images:[],
   })
-
+const [preview, setpreview] = useState([])
   const context=useContext(Mycontext)
- const [preview, setpreview] = useState([])
+
+  useEffect(() => {
+    const id = context?.isScreenPanelopen?.id;
+    if (!id) return; 
+  
+    fetchDataFromApi(`/api/category/${id}`, formfields).then((res) => {
+      const category = res?.category;
+      console.log("Fetched category:", category);
+  
+      if (category) {
+        setFormfields((prev) => ({
+          ...prev,
+          name: category.name || ""
+        }));
+  
+        const imageArray = Array.isArray(category.image)
+          ? category.image
+          : [category.image];
+  
+        setpreview(imageArray);
+      } else {
+        console.warn("No category data found in response");
+      }
+    });
+  }, []);
+  
+
+ 
 
 const  onchangeInput=(e)=>{
    const{name,value}=e.target
@@ -51,18 +78,17 @@ const  onchangeInput=(e)=>{
       setisLoading(false);
       return;
   }
-  console.log('formfields:', formfields);
-  console.log('preview:', preview);
+ 
 
 const dataToSend = {
   name:formfields.name,
-  images: preview[0], 
+  image: preview[0], 
 };
 console.log('the value',dataToSend)
-  postDataCategory('/api/category/create',dataToSend).then((res)=>{
+  editDataCat(`/api/category/${context?.isScreenPanelopen?.id}`,dataToSend).then((res)=>{
     console.log(res)
     
-
+ context.refreshCategories()
     setTimeout(()=>{
       setisLoading(false);
       
@@ -96,7 +122,7 @@ console.log('the value',dataToSend)
         <h1 className='text-[16px] font-bold mb-2'>Category Image</h1>
         <div className='flex flex-wrap gap-4'>
 
-          {preview?.length !== 0 &&
+          {Array.isArray(preview) && preview?.length !== 0 &&
             preview.map((image, index) => (
               <div key={index} className="relative w-[150px] h-[120px] 
               rounded-md overflow-hidden shadow-md border border-gray-300">
@@ -150,4 +176,4 @@ console.log('the value',dataToSend)
    
 
 
-export default AddCategory1
+export default EditCategory
