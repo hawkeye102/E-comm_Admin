@@ -5,6 +5,8 @@ import { useState } from 'react';
 import { Mycontext } from '../../App';
 import { UploadImages } from '../../../utils/api';
 
+//TODO : IMAGE DELETION FROM CLOUDINARY NOT JUST FROM PREVIEW
+
 const UploadBox = (props) => {
    const [preview, setpreview] = useState([])
       const [uploading, setuploading] = useState(false)

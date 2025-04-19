@@ -124,5 +124,48 @@ export const UploadImages = async (url, filesArray) => {
     }
   };
   
-  
+
+  export const postDataCategory = async (url, formData) => {
+    try {
+        const token = localStorage.getItem("accesstoken");
+        console.log("Token being sent:", token);
+
+        console.log("Full Request URL:", `${apiUrl}${url}`);
+
+        const form = new FormData(); 
+
+        form.append("name", formData.name); 
+
+        if (formData.images && formData.images[0]) {
+       form.append("image", formData.images[0]); 
+    }
+       const response = await fetch(`${apiUrl}${url}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: formData.name,
+                parent_id: null,
+                image: formData.images, // this assumes it’s a URL, not a File
+              }),
+        });
+
+        const data = await response.json(); // Parse JSON response
+        console.log("Full API Response:", data);
+
+        if (!response.ok) {
+            console.error("Error in postDataCategory:", data.message || `HTTP error! Status: ${response.status}`);
+            throw new Error(data.message || `HTTP error! Status: ${response.status}`);
+        }
+
+        return data; // Return successful response
+
+    } catch (error) {
+        console.error("Error in postDataCategory:", error);
+        return { success: false, message: error.message || "Request failed" };
+    }
+};
+
   

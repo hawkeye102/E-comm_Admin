@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import UploadBox from '../../Components/uploadBox';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
@@ -6,27 +6,67 @@ import { IoClose } from "react-icons/io5";
 import { Button } from '@mui/material';
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { useState } from 'react';
+import { Mycontext } from '../../App';
+import {postDataCategory } from '../../../utils/api';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const  AddCategory1 = () => {
+  const [uploading, setuploading] = useState(false)
+   const [isLoading,setisLoading] = useState(false)
   const [formfields,setFormfields] =useState({
          name:'',
          images:[],
   })
- const [preview, setpreview] = useState([])
-      const  onchangeInput=(e)=>{
-          const{name,value}=e.target
-          setFormfields((e)=>{
-            return{
-              ...formfields,
-              [name]:e.target.value
-            }
-          })
-        }
-  return (
 
-    
-    <section className='p-5 bg-[#f1f1f1]'>
-    <form className='form'>
+  const context=useContext(Mycontext)
+ const [preview, setpreview] = useState([])
+
+const  onchangeInput=(e)=>{
+   const{name,value}=e.target
+     setFormfields((e)=>{
+        return{
+        ...formfields,
+        [name]:value
+        }
+        })
+        }
+ 
+
+   const handleSubmit=(e)=>{
+   
+      e.preventDefault();
+      setisLoading(true);
+      
+
+
+      if (formfields.name ==="") {
+        context.openAlertBox("error", "Please enter a category name.");
+        setisLoading(false);
+        return;
+    }
+
+    if (preview?.length===0) {
+      context.openAlertBox("error", "Please select a category image to upload.");
+      setisLoading(false);
+      return;
+  }
+  console.log('formfields:', formfields);
+  console.log('preview:', preview);
+
+const dataToSend = {
+  name:formfields.name,
+  images: preview[0], 
+};
+console.log('the value',dataToSend)
+  postDataCategory('/api/category/create',dataToSend).then((res)=>{
+    console.log(res)
+    setisLoading(false);
+  })
+ }
+
+  return (
+ <section className='p-5 bg-[#f1f1f1]'>
+    <form className='form' onSubmit={handleSubmit}>
       <div className='scroll max-h-[70vh] overflow-y-scroll'>
         <div className='grid grid-cols-1'>
           <div className='mb-3 w-[38%]'>
@@ -36,7 +76,9 @@ const  AddCategory1 = () => {
               name='name'
               value={formfields.name}
               onChange={onchangeInput}
-              className='plane w-full h-[40px] rounded-sm border border-[rgba(0,0,0,0.2)] focus:outline-none p-3 focus:border-[rgba(0,0,0,0.9)]'
+              className='plane w-full h-[40px] rounded-sm border
+               border-[rgba(0,0,0,0.2)] focus:outline-none p-3 
+               focus:border-[rgba(0,0,0,0.9)]'
             />
           </div>
         </div>
@@ -46,7 +88,8 @@ const  AddCategory1 = () => {
 
           {preview?.length !== 0 &&
             preview.map((image, index) => (
-              <div key={index} className="relative w-[150px] h-[120px] rounded-md overflow-hidden shadow-md border border-gray-300">
+              <div key={index} className="relative w-[150px] h-[120px] 
+              rounded-md overflow-hidden shadow-md border border-gray-300">
   <LazyLoadImage
     src={image}
     alt="category preview"
@@ -80,8 +123,13 @@ const  AddCategory1 = () => {
         <br />
         <div className='w-[250px]'>
           <Button type="submit" className='btn-blue btn-sm mt-3 w-full flex gap-3'>
-            <FaCloudUploadAlt className='text-[25px] text-white' />
-            Publish and View
+            {
+              isLoading===true ? <CircularProgress color='inherit'/>:
+             
+             <><FaCloudUploadAlt className='text-[25px] text-white' /> Publish and View</> 
+           
+            }
+            
           </Button>
         </div>
       </div>
