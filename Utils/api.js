@@ -226,3 +226,24 @@ export const fetchDataFromApi = async (url) => {
         throw error;
     }
 };
+
+
+export const deleteData=async(url)=>{
+  const token = localStorage.getItem("accessToken");
+  const config = {
+    method: "DELETE",
+    headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'  
+    },
+    
+};
+try {
+  console.log("Sending Request to:", apiUrl + url);
+   await axios.delete(apiUrl + url, config);
+  
+} catch (error) {
+  console.error("Error in deleteData:", error);
+  throw error;
+}
+}

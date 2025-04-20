@@ -84,13 +84,7 @@ const App = () => {
     open:false,
     id:''
   })
-  const [allCategories, setAllCategories] = useState([]);
-
-const refreshCategories = async () => {
-  const res = await fetchDataFromApi('/api/category');
-  setAllCategories(res?.categories || []);
-};
-
+  
   const openAlertBox=(status,msg)=>{
     if(status==="success"){
       toast.success(msg);
@@ -145,7 +139,7 @@ const refreshCategories = async () => {
     isScreenPanelopen,
     setisScreenPanelopen,
     openAlertBox,
-    refreshCategories
+    
     
 
   }

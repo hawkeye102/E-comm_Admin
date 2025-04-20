@@ -7,7 +7,7 @@ import { Button } from '@mui/material'
 import { IoMdAdd } from "react-icons/io";
 import { Search } from '@mui/icons-material';
 import { InputAdornment} from '@mui/material';
-import { fetchDataFromApi } from '../../../Utils/api'
+import { deleteData, fetchDataFromApi } from '../../../Utils/api'
 
 
 import {
@@ -37,9 +37,11 @@ const CategoryList = () => {
     
 
     useEffect(() => {
-      refreshCategoryList();
-    }, []);
-    
+      if (!context.isScreenPanelopen.open) {
+        refreshCategoryList();
+      }
+    }, [context.isScreenPanelopen.open]);
+   
     const refreshCategoryList = () => {
       fetchDataFromApi('/api/category')
         .then((res) => {
@@ -53,7 +55,11 @@ const CategoryList = () => {
     };
     
    
-    
+    const deleteCat=(_id)=>[
+      deleteData(`/api/category/${_id}`).then((res)=>{
+        refreshCategoryList();
+      })
+    ]
 
     
     return (
@@ -138,7 +144,8 @@ const CategoryList = () => {
         })}/>
             </Tooltip>
            <Tooltip title="Delete">
-           <Delete sx={{ cursor: 'pointer', color: 'red' }} fontSize="small"/>
+           <Delete sx={{ cursor: 'pointer', color: 'red' }} fontSize="small" 
+           onClick={()=>deleteCat(item?._id)}/>
            </Tooltip>
           </Box>
          </TableCell>

@@ -9,9 +9,11 @@ import { useState } from 'react';
 import { Mycontext } from '../../App';
 import {postDataCategory } from '../../../utils/api';
 import CircularProgress from '@mui/material/CircularProgress';
+import { fetchDataFromApi } from '../../../utils/api';
+import { useEffect } from 'react';
 
 const  AddCategory1 = () => {
-  
+  const [catdata,setCatdata]=useState([])
   const [uploading, setuploading] = useState(false)
    const [isLoading,setisLoading] = useState(false)
   const [formfields,setFormfields] =useState({
@@ -31,7 +33,8 @@ const  onchangeInput=(e)=>{
         }
         })
         }
- 
+
+  
 
    const handleSubmit=(e)=>{
    
@@ -59,20 +62,11 @@ const dataToSend = {
   images: preview[0], 
 };
 console.log('the value',dataToSend)
-  postDataCategory('/api/category/create',dataToSend).then((res)=>{
-    console.log(res)
-    
-
-    setTimeout(()=>{
-      setisLoading(false);
-      
-      context.setisScreenPanelopen({
-      open:false
-    })
-    },500)
-    
-  })
- }
+postDataCategory('/api/category/create', dataToSend).then((res) => {
+  setisLoading(false);
+  context.setisScreenPanelopen({ open: false });
+});
+  }
 
   return (
  <section className='p-5 bg-[#f1f1f1]'>
@@ -144,6 +138,7 @@ console.log('the value',dataToSend)
         </div>
       </div>
     </form>
+    
   </section>
 );
 };

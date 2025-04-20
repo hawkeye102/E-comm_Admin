@@ -20,6 +20,7 @@ const  EditCategory = () => {
   })
 const [preview, setpreview] = useState([])
   const context=useContext(Mycontext)
+  const [catdata,setCatdata]=useState([])
 
   useEffect(() => {
     const id = context?.isScreenPanelopen?.id;
@@ -45,6 +46,24 @@ const [preview, setpreview] = useState([])
       }
     });
   }, []);
+
+   useEffect(() => {
+        if (!context.isScreenPanelopen.open) {
+          refreshCategoryList();
+        }
+      }, [context.isScreenPanelopen.open]);
+     
+      const refreshCategoryList = () => {
+        fetchDataFromApi('/api/category')
+          .then((res) => {
+            if (res && res.rootCategories) {
+              setCatdata(res.rootCategories);
+            } else {
+              console.warn("rootCategories not found in API response");
+            }
+          })
+          .catch((err) => console.error("API Fetch Error:", err));
+      };
   
 
  
@@ -88,7 +107,7 @@ console.log('the value',dataToSend)
   editDataCat(`/api/category/${context?.isScreenPanelopen?.id}`,dataToSend).then((res)=>{
     console.log(res)
     
- context.refreshCategories()
+
     setTimeout(()=>{
       setisLoading(false);
       
