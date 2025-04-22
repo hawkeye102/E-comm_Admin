@@ -147,7 +147,7 @@ export const UploadImages = async (url, filesArray) => {
             },
             body: JSON.stringify({
                 name: formData.name,
-                parent_id: null,
+                parent_id: formData.parent_id,
                 image: formData.images, // this assumes it’s a URL, not a File
               }),
         });

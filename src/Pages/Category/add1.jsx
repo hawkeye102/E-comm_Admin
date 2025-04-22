@@ -68,6 +68,7 @@ postDataCategory('/api/category/create', dataToSend).then((res) => {
 });
   }
 
+  
   return (
  <section className='p-5 bg-[#f1f1f1]'>
     <form className='form' onSubmit={handleSubmit}>
