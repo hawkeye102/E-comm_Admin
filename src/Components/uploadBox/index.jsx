@@ -35,12 +35,16 @@ const UploadBox = (props) => {
       
           setuploading(false);
       
-          if (res?.imageUrl) {
-            props.setpreview((prevPreview) => [...prevPreview, res.imageUrl]);
-          } else {
-            console.error("No image URL returned in response");
-          }
-          
+          const urls = res?.imageUrl
+  ? [res.imageUrl] 
+  : res?.imageUrls || [];
+
+if (urls.length > 0) {
+  props.setpreview((prevPreview) => [...prevPreview, ...urls]);
+} else {
+  console.error("No valid image URLs returned in response");
+}
+
         } catch (error) {
           console.error("Upload Error:", error);
           setuploading(false);

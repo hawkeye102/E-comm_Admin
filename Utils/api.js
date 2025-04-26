@@ -247,3 +247,63 @@ try {
   throw error;
 }
 }
+
+export const postDataProduct = async (url, formData) => {
+  try {
+    const token = localStorage.getItem("accessToken");
+    console.log("Token being sent:", token);
+    console.log("Full Request URL:", `${apiUrl}${url}`);
+
+    // ⭐ Clean up location before sending
+    let cleanedLocation = formData.location;
+    if (!Array.isArray(formData.location)) {
+      cleanedLocation = [];  // if it's not an array, default to empty array
+    }
+
+    const response = await fetch(`${apiUrl}${url}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+
+      
+      body: JSON.stringify({
+        name: formData.name,
+        description: formData.description,
+        images: formData.images, // Make sure it's URL
+        brand: formData.brand,
+        price: formData.price,
+        oldPrice: formData.oldPrice,
+        catName: formData.catName,
+        catId: formData.catId,
+        subcatId: formData.subcatId,
+        subcat: formData.subcat,
+        subcatName: formData.subcatName,
+        category: formData.category,
+        countInstock: formData.countInstock,
+        rating: formData.rating,
+        isFeatured: formData.isFeatured,
+        discount: formData.discount,
+        productRam: formData.productRam,
+        size: formData.size,
+        productWeight: formData.productWeight,
+        location: cleanedLocation,
+      }),
+    });
+
+    const data = await response.json(); 
+    console.log("Full API Response:", data);
+
+    if (!response.ok) {
+      console.error("Error in postDataProduct:", data.message || `HTTP error! Status: ${response.status}`);
+      throw new Error(data.message || `HTTP error! Status: ${response.status}`);
+    }
+
+    return data;
+
+  } catch (error) {
+    console.error("Error in postDataProduct:", error);
+    return { success: false, message: error.message || "Request failed" };
+  }
+};
