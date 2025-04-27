@@ -40,6 +40,7 @@ import ChangePassword from "./Pages/ChangePassword";
 import AddAddress from "./Pages/Address";
 import EditCategory from "./Pages/Category/Editcategory";
 import {fetchDataFromApi } from "../Utils/api";
+import EditProducts from "./Pages/Products/EditProduct";
 
 const Layout = () => {
   const { issidebaropen } = React.useContext(Mycontext);
@@ -201,8 +202,12 @@ const App = () => {
           isScreenPanelopen?.model ==='Add Address' && <AddAddress/>
         }
 
-{
+        {
           isScreenPanelopen?.model ==='Edit Category' && <EditCategory/>
+        }
+
+{
+          isScreenPanelopen?.model ==='Edit Product' && <EditProducts/>
         }
 
 
