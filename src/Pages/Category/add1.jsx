@@ -11,6 +11,7 @@ import {postDataCategory } from '../../../utils/api';
 import CircularProgress from '@mui/material/CircularProgress';
 import { fetchDataFromApi } from '../../../utils/api';
 import { useEffect } from 'react';
+import {useNavigate} from 'react-router-dom';
 
 const  AddCategory1 = () => {
   const [catdata,setCatdata]=useState([])
@@ -34,7 +35,7 @@ const  onchangeInput=(e)=>{
         })
         }
 
-  
+        
 
    const handleSubmit=(e)=>{
    
@@ -64,7 +65,10 @@ const dataToSend = {
 console.log('the value',dataToSend)
 postDataCategory('/api/category/create', dataToSend).then((res) => {
   setisLoading(false);
+  
   context.setisScreenPanelopen({ open: false });
+  
+
 });
   }
 

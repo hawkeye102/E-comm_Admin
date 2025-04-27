@@ -55,11 +55,25 @@ const CategoryList = () => {
     };
     
    
-    const deleteCat=(_id)=>[
-      deleteData(`/api/category/${_id}`).then((res)=>{
-        refreshCategoryList();
-      })
-    ]
+    const deleteCat = (_id) => {
+      
+      fetchDataFromApi(`/api/subcategory?categoryId=${_id}`)
+        .then((res) => {
+          if (res && res.subcategories && res.subcategories.length > 0) {
+            
+            context.openAlertBox("Please delete the subcategories first before deleting the category.");
+          } else {
+           
+            deleteData(`/api/category/${_id}`).then((res) => {
+              refreshCategoryList();
+            });
+          }
+        })
+        .catch((err) => {
+          console.error("Error fetching subcategories:", err);
+        });
+    };
+    
 
     
     return (

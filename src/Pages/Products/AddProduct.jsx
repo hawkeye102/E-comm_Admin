@@ -14,7 +14,6 @@ import { FaCloudUploadAlt } from "react-icons/fa";
 import { Mycontext } from '../../App';
 import { useEffect } from 'react';
 import { fetchDataFromApi } from '../../../utils/api';
-import {postDataCategory} from '../../../utils/api';
 import { postDataProduct } from '../../../utils/api';
 
 
@@ -58,14 +57,25 @@ const AddProducts = () => {
 
     const [catdata,setCatdata]=useState([])
 
-   const handleChangeProduct = (event) => {
-    setProductcat(event.target.value);
-  }
+    const handleChangeProduct = (event) => {
+      const selectedCatId = event.target.value;
+      setProductcat(selectedCatId);
+    
+      const selectedCat = catdata.find((cat) => cat._id === selectedCatId);
+    
+      setFormfields((prev) => ({
+        ...prev,
+        catId: selectedCatId,
+        category: selectedCatId,
+        catName: selectedCat?.name || '',
+      }));
+    };
+    
 
   const selectCatByName = (name, id) => {
     setFormfields((prev) => ({
       ...prev,
-      catName: name,
+      catName:name,
       catId: id,
       category: id,
       
@@ -75,13 +85,29 @@ const AddProducts = () => {
   
   
 
-  const selectSubCatByName=(name)=>{
-    formfields.subcat=name
-      }
+  const selectSubCatByName = (name, id) => {
+    setFormfields((prev) => ({
+      ...prev,
+      subcatName: name,
+      subcatId: id,
+      subcat: id, 
+    }));
+  };
+  
   const handleChangeSubProduct = (event) => {
-    setProductSubcat(event.target.value);
-    formfields.subcatId=event.target.value
-  }
+    const selectedSubcatId = event.target.value;
+    setProductSubcat(selectedSubcatId);
+  
+    setFormfields((prev) => ({
+      ...prev,
+      subcatId: selectedSubcatId,
+      subcat: selectedSubcatId,
+      subcatName: catdata
+        .find((cat) => cat._id === Productcat)
+        ?.children?.find((subcat) => subcat._id === selectedSubcatId)?.name || '',
+    }));
+  };
+  
 
   const handleChangeFeatured = (event) => {
     setProductFeatured(event.target.value);
@@ -159,7 +185,7 @@ const AddProducts = () => {
               e.preventDefault();
               setisLoading(true);
             
-              // Example validation
+              
               if (formfields.name === "") {
                 context.openAlertBox("error", "Please enter a product name.");
                 setisLoading(false);
@@ -178,20 +204,20 @@ const AddProducts = () => {
 
 // 1. Fix location
 if (!formfields.location || formfields.location === '') {
-  cleanedFormfields.location = [];  // <-- Empty array instead of empty string
+  cleanedFormfields.location = []; 
 }
             
               // Build the payload
               const dataToSend = {
                 ...formfields,
-                images: preview[0], // or preview if multiple images are allowed
+                images: preview[0], 
                 images: preview[0],
-  price: Number(formfields.price),
-  oldPrice: Number(formfields.oldPrice),
-  discount: Number(formfields.discount),
-  countInstock: Number(formfields.countInstock),
-  rating: Number(formfields.rating),
-  isFeatured: ProductFeatured === 'true' || ProductFeatured === true, // convert properly
+                price: Number(formfields.price),
+                oldPrice: Number(formfields.oldPrice),
+                discount: Number(formfields.discount),
+                countInstock: Number(formfields.countInstock),
+                rating: Number(formfields.rating),
+                isFeatured: ProductFeatured === 'true' || ProductFeatured === true, 
               };
             
               console.log("Sending this product data:", dataToSend);
@@ -200,6 +226,7 @@ if (!formfields.location || formfields.location === '') {
               postDataProduct('/api/product/create', dataToSend).then((res) => {
                 setisLoading(false);
                 context.setisScreenPanelopen({ open: false }); // close the panel after success
+                window.location.href = "/product";
               }).catch((err) => {
                 setisLoading(false);
                 context.openAlertBox("error", "Something went wrong while creating the product.");
