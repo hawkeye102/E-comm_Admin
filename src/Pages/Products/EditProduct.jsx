@@ -110,9 +110,14 @@ const EditProducts = () => {
   
 
   const handleChangeFeatured = (event) => {
-    setProductFeatured(event.target.value);
-    formfields.isFeatured=event.target.value
-  }
+    const value = event.target.value;
+    setProductFeatured(value);
+    setFormfields((prev) => ({
+      ...prev,
+      isFeatured: value,
+    }));
+  };
+  
   const handleChangesetProductRams = (event) => {
     const { value } = event.target;
     setProductRams(value);  
@@ -158,8 +163,29 @@ const EditProducts = () => {
          }
          })
          }
-
-          
+        
+         useEffect(() => {
+          if (context.isScreenPanelopen.model === "Edit Product" && context.isScreenPanelopen.editData) {
+            setFormfields((prev) => ({
+              ...prev,
+              name: context.isScreenPanelopen.editData.name || '',
+              description: context.isScreenPanelopen.editData.description || '',
+              price: context.isScreenPanelopen.editData.price || '',
+              oldPrice: context.isScreenPanelopen.editData.oldPrice || '',
+              catName: context.isScreenPanelopen.editData.catName || '',
+              catId: context.isScreenPanelopen.editData.catId || '',
+              subcatName: context.isScreenPanelopen.editData.subcatName || '',
+              subcatId: context.isScreenPanelopen.editData.subcatId || '',
+              rating: context.isScreenPanelopen.editData.rating || '',
+              discount: context.isScreenPanelopen.editData.discount || '',
+              isFeatured: context.isScreenPanelopen.editData.isFeatured || '',
+              countInstock: context.isScreenPanelopen.editData.countInstock || '',
+              images: context.isScreenPanelopen.editData.images || '',
+              // continue other fields
+            }));
+          }
+        }, [context.isScreenPanelopen]);
+         
 
  useEffect(() => {
    if (context.isScreenPanelopen.open) {
