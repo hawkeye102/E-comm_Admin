@@ -25,6 +25,8 @@ import {
     const [categoryFilter, setCategoryFilter] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(4);
+    const [selectedProductIds, setSelectedProductIds] = useState([]);
+
   
     const context = useContext(Mycontext);
   
@@ -59,30 +61,75 @@ import {
       });
     };
   
-    // 🆕 Get Unique Categories
+    // Get Unique Categories
     const uniqueCategories = [...new Set(productdata.map(item => item.catName))];
   
-    // 🆕 Filtered Products based on category selected
+    // Filtered Products based on category selected
     const filteredProducts = categoryFilter
       ? productdata.filter((item) => item.catName === categoryFilter)
       : productdata;
+
   
+      const bulkDeleteProducts = async () => {
+        if (selectedProductIds.length === 0) {
+          alert("No products selected.");
+          return;
+        }
+      
+        const confirmDelete = window.confirm("Are you sure you want to delete selected products?");
+        if (!confirmDelete) return;
+      
+        try {
+          const res = await fetch('http://localhost:8000/api/product/deleteMultiple', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ids: selectedProductIds }),
+          });
+      
+          const result = await res.json();
+      
+          if (result.success) {
+            alert("Products deleted successfully!");
+            setSelectedProductIds([]);
+            refreshProductList();
+          } else {
+            alert("Error deleting products: " + result.message);
+          }
+        } catch (error) {
+          console.error("Bulk delete error:", error);
+          alert("Something went wrong while deleting products.");
+        }
+      };
+      
+
+    
     return (
       <Box sx={{ padding: 3 }}>
         {/* Top Global Buttons */}
         <Box display="flex" justifyContent="flex-end" gap={2} mb={2}>
-          <Button variant="contained" color="success">Export</Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => context.setisScreenPanelopen({
-              open: true,
-              model: 'Add Product'
-            })}
-          >
-            Add Product
-          </Button>
-        </Box>
+  <Button
+    variant="contained"
+    color="error"
+    onClick={bulkDeleteProducts}
+    disabled={selectedProductIds.length === 0}
+  >
+    Delete Selected
+  </Button>
+  <Button variant="contained" color="success">Export</Button>
+  <Button
+    variant="contained"
+    color="primary"
+    onClick={() => context.setisScreenPanelopen({
+      open: true,
+      model: 'Add Product'
+    })}
+  >
+    Add Product
+  </Button>
+</Box>
+
   
         {/* Main Table Card */}
         <Paper sx={{ padding: 3 }}>
@@ -136,7 +183,33 @@ import {
             <Table>
               <TableHead sx={{ backgroundColor: '#f5f5f5', padding: 2, borderRadius: 2 }}>
                 <TableRow>
-                  <TableCell padding="checkbox"><Checkbox /></TableCell>
+                <TableCell padding="checkbox">
+  <Checkbox
+    checked={
+      filteredProducts.length > 0 &&
+      selectedProductIds.length ===
+        filteredProducts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).length
+    }
+    indeterminate={
+      selectedProductIds.length > 0 &&
+      selectedProductIds.length <
+        filteredProducts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).length
+    }
+    onChange={(e) => {
+      const isChecked = e.target.checked;
+      const currentPageIds = filteredProducts
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        .map((item) => item._id);
+
+      setSelectedProductIds((prev) =>
+        isChecked
+          ? Array.from(new Set([...prev, ...currentPageIds]))
+          : prev.filter((id) => !currentPageIds.includes(id))
+      );
+    }}
+  />
+</TableCell>
+
                   <TableCell sx={{ fontWeight: 'bold' }}>Image</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Product Name</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Category</TableCell>
@@ -152,7 +225,20 @@ import {
                   .reverse()
                   .map((item, index) => (
                     <TableRow key={index}>
-                      <TableCell padding="checkbox"><Checkbox /></TableCell>
+                      <TableCell padding="checkbox">
+  <Checkbox
+    checked={selectedProductIds.includes(item._id)}
+    onChange={(e) => {
+      const isChecked = e.target.checked;
+      setSelectedProductIds((prev) =>
+        isChecked
+          ? [...prev, item._id]
+          : prev.filter((id) => id !== item._id)
+      );
+    }}
+  />
+</TableCell>
+
   
                       <TableCell>
                         <Box display="flex" alignItems="center" gap={2}>
