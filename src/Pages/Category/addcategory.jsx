@@ -49,30 +49,48 @@ const CategoryList = () => {
             setCatdata(res.rootCategories);
           } else {
             console.warn("rootCategories not found in API response");
-          }
-        })
-        .catch((err) => console.error("API Fetch Error:", err));
-    };
-    
-   
-    const deleteCat = (_id) => {
-      
-      fetchDataFromApi(`/api/subcategory?categoryId=${_id}`)
-        .then((res) => {
-          if (res && res.subcategories && res.subcategories.length > 0) {
-            
-            context.openAlertBox("Please delete the subcategories first before deleting the category.");
-          } else {
-           
-            deleteData(`/api/category/${_id}`).then((res) => {
-              refreshCategoryList();
-            });
+            setCatdata([]);
           }
         })
         .catch((err) => {
-          console.error("Error fetching subcategories:", err);
+          console.error("API Fetch Error:", err);
+          setCatdata([]);
         });
     };
+    
+    
+   
+    const findCategoryById = (categories, id) => {
+      for (const cat of categories) {
+        if (cat._id === id) return cat;
+        if (cat.children?.length) {
+          const found = findCategoryById(cat.children, id);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+    
+    const deleteCat = (_id) => {
+      console.log("delete clicked", _id);
+      const selectedCategory = findCategoryById(catdata, _id);
+    
+      if (selectedCategory?.children?.length > 0) {
+        
+        context.openAlertBox("error", "Please delete the subcategories first before deleting the category.");
+
+        return;
+      }
+    
+      deleteData(`/api/category/${_id}`)
+        .then((res) => {
+          refreshCategoryList();
+        })
+        .catch((err) => {
+          console.error("Delete Error:", err);
+        });
+    };
+    
     
 
     
