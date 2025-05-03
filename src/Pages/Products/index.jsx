@@ -213,7 +213,10 @@ import {
                   <TableCell sx={{ fontWeight: 'bold' }}>Image</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Product Name</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Category</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Sub Category</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+  Sub&nbsp;Category
+</TableCell>
+
                   <TableCell sx={{ fontWeight: 'bold' }}>Price</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Sales</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>Action</TableCell>
@@ -246,7 +249,14 @@ import {
                         </Box>
                       </TableCell>
   
-                      <TableCell sx={{ fontWeight: 500 }}>{item.name}</TableCell>
+                      <TableCell sx={{ fontWeight: 500 }}>
+  <Typography variant="body1" fontWeight={600}>
+    {item.name}
+  </Typography>
+  <Typography variant="body2" color="text.secondary">
+    {item.brand}
+  </Typography>
+</TableCell>
                       <TableCell>{item.catName}</TableCell>
                       <TableCell>{item.subcatName}</TableCell>
                       <TableCell>

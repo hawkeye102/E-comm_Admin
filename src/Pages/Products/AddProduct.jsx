@@ -141,12 +141,13 @@ const AddProducts = () => {
     }));
   };
 
-  const onChangeRating = (e) => {
-    setFormfields((prev) => ({
-      ...prev,
-      rating: e.target.value
+  const onChangeRating = (event, newValue) => {
+    setFormfields((prevFields) => ({
+      ...prevFields,
+      rating: newValue,
     }));
   };
+  
   
 
   const  onchangeInput=(e)=>{
@@ -211,7 +212,6 @@ if (!formfields.location || formfields.location === '') {
               const dataToSend = {
                 ...formfields,
                 images: preview[0], 
-                images: preview[0],
                 price: Number(formfields.price),
                 oldPrice: Number(formfields.oldPrice),
                 discount: Number(formfields.discount),
@@ -424,11 +424,18 @@ if (!formfields.location || formfields.location === '') {
    
 
     <div className='grid grid-cols-1'>
-    <div className='col'>
-      <h1 className='text-[16px] font-bold mb-2'> Product Ratings</h1>
-      <Rating name="half-rating" defaultValue={1.5} precision={0.5} onChange={onChangeRating} />
-    </div>
-    </div>
+  <div className='col'>
+    <h1 className='text-[16px] font-bold mb-2'> Product Ratings</h1>
+    {/*Updated below line */}
+    <Rating
+      name="half-rating"
+      value={Number(formfields.rating) || 0} //ensure controlled component
+      precision={0.5}
+      onChange={onChangeRating}
+    />
+  </div>
+</div>
+
 
     </div>
 

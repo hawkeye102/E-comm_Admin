@@ -20,9 +20,9 @@ const Dashboardbox = () => {
     className="mySwiper"
   >
     <SwiperSlide>
-        <div className='  box  bg-white p-4 rounded-md border border-[rgba(0,0,0,0.1)]
-         !flex !items-center gap-3 cursor-pointer hover:bg-[#f1f1f1]'>
-        <FiGift className='text-[22px] text-[#3872fa]' />
+        <div className='  box  bg-[#B3E5FC] p-4 rounded-md border border-[rgba(0,0,0,0.1)]
+         !flex !items-center gap-3 cursor-pointer mb-1'>
+        <FiGift className='text-[22px] text-[#3D2C8D]' />
           <div className='!w-[60%]  !items-center gap-3'>
            <h1> New Orders</h1>
            <b>1,399</b>
@@ -33,8 +33,8 @@ const Dashboardbox = () => {
         </div>
     </SwiperSlide>
     <SwiperSlide>
-        <div className=' box  bg-white p-4 rounded-md border border-[rgba(0,0,0,0.1)]
-         !flex !items-center gap-3 cursor-pointer hover:bg-[#f1f1f1]'>
+        <div className=' box  bg-[#A0E8AF] p-4 rounded-md border border-[rgba(0,0,0,0.1)]
+         !flex !items-center gap-3 cursor-pointer '>
         < HiOutlineChartPie className='text-[30px] text-[#10b981]' />
           <div className='!w-[60%]  !items-center gap-3'>
            <h1>Sales</h1>
@@ -46,8 +46,8 @@ const Dashboardbox = () => {
         </div>
     </SwiperSlide>
     <SwiperSlide>
-        <div className=' box  bg-white p-4 rounded-md border border-[rgba(0,0,0,0.1)]
-         !flex !items-center gap-3 cursor-pointer hover:bg-[#f1f1f1]'>
+        <div className=' box  bg-[#D0BFFF] p-4 rounded-md border border-[rgba(0,0,0,0.1)]
+         !flex !items-center gap-3 cursor-pointer'>
         < BsBank className='text-[22px] text-[#7928ca]' />
           <div className='!w-[60%]  !items-center gap-3'>
            <h1>Revenue</h1>
@@ -59,8 +59,8 @@ const Dashboardbox = () => {
         </div>
     </SwiperSlide>
     <SwiperSlide>
-        <div className=' box   bg-white p-4 rounded-md border border-[rgba(0,0,0,0.1)]
-         !flex !items-center gap-3 cursor-pointer hover:bg-[#f1f1f1]'>
+        <div className=' box   bg-[#FFCCD5] p-4 rounded-md border border-[rgba(0,0,0,0.1)]
+         !flex !items-center gap-3 cursor-pointer '>
         <RiProductHuntLine className='text-[28px] text-[#f36e79]' />
           <div className='!w-[60%]  !items-center gap-3'>
            <h1>Total Products</h1>

@@ -1,23 +1,28 @@
 import React, { useContext } from 'react'
 import Dashboardbox from '../../Components/DashboardBoxes'
-import { FaHeart } from "react-icons/fa";
 import { Button } from '@mui/material';
 import { BsPlusLg } from "react-icons/bs";
 import { AiOutlineEye } from "react-icons/ai";
 import { useState } from 'react';
 import Checkbox from '@mui/material/Checkbox';
-import {Link} from "react-router-dom"
-import Progressbar from '../../Components/Progressbar';
-import { AiOutlineEdit } from "react-icons/ai";
-import { FaRegEye } from "react-icons/fa6";
-import { FiTrash2 } from "react-icons/fi";
 import Tooltip from '@mui/material/Tooltip';
-import Pagination from '@mui/material/Pagination';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { BiExport } from "react-icons/bi";
 import ChartsSection from '../Charts';
 import { Mycontext } from '../../App';
+import { Search } from '@mui/icons-material';
+import { InputAdornment} from '@mui/material';
+import { deleteData } from '../../../utils/api'
+import { fetchDataFromApi } from '../../../utils/api'
+import { useEffect } from 'react'
+import { Rating } from '@mui/material';
+
+import {
+  TextField,Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+    Paper, FormControl, InputLabel,
+    Typography, Avatar, Box, IconButton, TablePagination, LinearProgress
+  } from '@mui/material';
+  import { Edit, Delete, Visibility } from '@mui/icons-material';
 
 
 
@@ -36,7 +41,52 @@ const Dashboard = () => {
   const toggleRow = (id) => {
     setExpandedRow(expandedRow === id ? null : id);
   }
+const [productdata, setProductdata] = useState([]);
+    const [categoryFilter, setCategoryFilter] = useState('');
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [selectedProductIds, setSelectedProductIds] = useState([]);
 
+  
+    const context = useContext(Mycontext);
+  
+    const handleChangePage = (event, newPage) => setPage(newPage);
+  
+    const handleChangeRowsPerPage = (event) => {
+      setRowsPerPage(parseInt(event.target.value, 10));
+      setPage(0);
+    };
+  
+    useEffect(() => {
+      if (!context.isScreenPanelopen.open) {
+        refreshProductList();
+      }
+    }, [context.isScreenPanelopen.open]);
+  
+    const refreshProductList = () => {
+      fetchDataFromApi('/api/product')
+        .then((res) => {
+          if (res && res.rootProducts) {
+            setProductdata(res.rootProducts);
+          } else {
+            console.warn("products not found in API response");
+          }
+        })
+        .catch((err) => console.error("API Fetch Error:", err));
+    };
+  
+  
+  
+    // Get Unique Categories
+    const uniqueCategories = [...new Set(productdata.map(item => item.catName))];
+  
+    // Filtered Products based on category selected
+    const filteredProducts = categoryFilter
+      ? productdata.filter((item) => item.catName === categoryFilter)
+      : productdata;
+
+  
+      
   const orders = [
     {
       id: "1001",
@@ -79,7 +129,7 @@ const Dashboard = () => {
     }
   ];
 
-  const context = useContext(Mycontext)
+  
   return (
     <>
     <div className='dashboardWrapper w-full h-full flex flex-col '>
@@ -101,7 +151,7 @@ const Dashboard = () => {
     </div>
     <Dashboardbox/>
 
-    <div className='card mt-2 shadow-md sm:rounded-lg bg-white ' >
+    <div className='card mt-2 shadow-md sm:rounded-lg bg-white mb-4' >
       <div className='flex items-center justify-between py-3 px-3 '>
         <h2 className='text-[18px] font-bold'>Recent Orders</h2>
       </div>
@@ -163,463 +213,182 @@ const Dashboard = () => {
                 </table>
          </div>
             </div>
-
-      <div className='card mt-3 shadow-md overflow-hidden sm:rounded-lg bg-white' >
-      <div className='flex items-center justify-between py-3 px-3 '>
-       <h2 className='text-[18px] font-bold'>Products</h2>
-      </div>
-
-     <div className='flex items-center w-full  pl-3 mb-2 justify-between '>
-      <div className='col w-[15%]'>
-        <h2 className='font-[600] text-[16px] mb-2'>Category By</h2>
+            <Paper sx={{ padding: 3 }}>
+  {/* Header with Filters and Buttons */}
+  <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+    <Box>
+      <Typography variant="h6" fontWeight="bold">Products</Typography>
+      {/* Category Filter */}
+      <FormControl size="small" sx={{ mt: 1, minWidth: 200 }}>
+        <InputLabel>Category By</InputLabel>
         <Select
-        className='w-full'
-        size='small'
-          labelId="demo-simple-select-helper-label"
-          id="demo-simple-select-helper"
-          value={Catfilterval}
-          label="Category"
-          onChange={handleChangecategoryFilter}
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          label="Category By"
         >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          <MenuItem value={10}>Men</MenuItem>
-          <MenuItem value={20}>Women</MenuItem>
-          <MenuItem value={30}>Kids</MenuItem>
+          <MenuItem value=""><em>All</em></MenuItem>
+          {uniqueCategories.map((category, index) => (
+            <MenuItem key={index} value={category}>
+              {category}
+            </MenuItem>
+          ))}
         </Select>
-       
-      
-      </div>
-      <div className='col w-[25%] ml-auto mt-8 flex items-center gap-3'>
-        <Button className='btn-blue  btn-sm  !bg-green-600'>Export</Button>
-        <Button className='btn-sm btn-blue' onClick={() =>
-                context.setisScreenPanelopen({
-                  open: true,
-                  model:'Add Product'
-                })}>Add Products</Button>
-      </div>
-     </div>
+      </FormControl>
+    </Box>
+
+    {/* Search + Buttons */}
+    <Box display="flex" flexDirection="column" alignItems="flex-end" gap={1}>
+      <TextField
+        placeholder="Search Products"
+        size="small"
+        sx={{
+          width: 240,
+          backgroundColor: '#f1f1f1',
+          borderRadius: '8px',
+        }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Search fontSize="small" />
+            </InputAdornment>
+          ),
+        }}
+      />
+      <Box display="flex" gap={1} mt={1}>
+        <Button variant="contained" color="success">Export</Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() =>
+            context.setisScreenPanelopen({
+              open: true,
+              model: 'Add Product',
+            })
+          }
+        >
+          Add Product
+        </Button>
+      </Box>
+    </Box>
+  </Box>
+
+  {/* Product Table */}
+  <TableContainer>
+    <Table>
+      <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+        <TableRow>
+            <TableCell padding="checkbox">
+            <Checkbox
+              checked={
+                filteredProducts.length > 0 &&
+                selectedProductIds.length ===
+                  filteredProducts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).length
+              }
+              indeterminate={
+                selectedProductIds.length > 0 &&
+                selectedProductIds.length <
+                  filteredProducts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).length
+              }
+              onChange={(e) => {
+                const isChecked = e.target.checked;
+                const currentPageIds = filteredProducts
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((item) => item._id);
+          
+                setSelectedProductIds((prev) =>
+                  isChecked
+                    ? Array.from(new Set([...prev, ...currentPageIds]))
+                    : prev.filter((id) => !currentPageIds.includes(id))
+                );
+              }}
+            />
+          </TableCell>
+          <TableCell sx={{ fontWeight: 'bold' }}>Image</TableCell>
+          <TableCell sx={{ fontWeight: 'bold' }}>Product Name</TableCell>
+          <TableCell sx={{ fontWeight: 'bold' }}>Category</TableCell>
+          <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+  Sub&nbsp;Category
+</TableCell>
+
+          <TableCell sx={{ fontWeight: 'bold' }}>Price</TableCell>
+          <TableCell sx={{ fontWeight: 'bold' }}>Sales</TableCell>
+          <TableCell sx={{ fontWeight: 'bold' }}>Ratings</TableCell>
+        </TableRow>
+      </TableHead>
+
+      <TableBody>
+        {filteredProducts
+          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+          .reverse()
+          .map((item, index) => (
+            <TableRow key={index}>
+               <TableCell padding="checkbox">
+                <Checkbox
+                  checked={selectedProductIds.includes(item._id)}
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    setSelectedProductIds((prev) =>
+                      isChecked
+                        ? [...prev, item._id]
+                        : prev.filter((id) => id !== item._id)
+                    );
+                  }}
+                />
+              </TableCell>
+              <TableCell>
+                <Avatar src={item.images} variant="square" sx={{ width: 60, height: 60 }} />
+              </TableCell>
+              <TableCell sx={{ fontWeight: 500 }}>
+  <Typography variant="body1" fontWeight={600}>
+    {item.name}
+  </Typography>
+  <Typography variant="body2" color="text.secondary">
+    {item.brand}
+  </Typography>
+</TableCell>
+              <TableCell>{item.catName}</TableCell>
+              <TableCell>{item.subcatName}</TableCell>
+              <TableCell>
+                <Typography variant="body2" color="text.secondary" sx={{ textDecoration: 'line-through' }}>
+                  ₹{item.oldPrice}
+                </Typography>
+                <Typography fontWeight="bold">₹{item.price}</Typography>
+              </TableCell>
+              <TableCell>
+                <Typography fontWeight={500}>{item.sales} sale</Typography>
+                <LinearProgress variant="determinate" value={80} sx={{ width: 100, mt: 0.5 }} />
+              </TableCell>
+              <TableCell>
+  <Box display="flex" alignItems="center" gap={1}>
+    <Rating
+      value={item.rating || 0}
+      precision={0.5}
+      readOnly
+      size="small"
+    />
+    <Typography variant="body2" color="text.secondary">
+      {item.rating?.toFixed(1) || '0.0'}
+    </Typography>
+  </Box>
+</TableCell>
+
+            </TableRow>
+          ))}
+      </TableBody>
+    </Table>
+
+    {/* Pagination */}
+    <TablePagination
+      component="div"
+      count={filteredProducts.length}
+      page={page}
+      onPageChange={handleChangePage}
+      rowsPerPage={rowsPerPage}
+      onRowsPerPageChange={handleChangeRowsPerPage}
+    />
+  </TableContainer>
+</Paper>
 
-       <div className="relative overflow-x-auto  ">
-                 <table className="w-full ">
-                  <thead className="text-[14px]  bg-blue-50">
-                    <tr>
-                   <th className="px-2 py-2 text-left">
-                    <Checkbox {...label} size="small"/>
-                         </th>
-                      <th className="">Products</th>
-                      <th className="">Category</th>
-                      <th className=" ">Sub Category</th>
-                      <th className="">Price</th>
-                      <th className="">Sales</th>
-                      <th className="">Action</th>
-                      </tr>
-                       </thead>
-                  <tbody>
-                    <tr>
-                    <td className="px-2 py-2">
-          <Checkbox {...label} size="small"/>
-        </td>
-
-        <td className="px-2 py-2 object-cover w-[390px]">
-          <div className='flex items-center gap-2  group'>
-          <img src='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAJQArAMBIgACEQEDEQH/xAAcAAABBQEBAQAAAAAAAAAAAAACAAEDBAYHBQj/xABDEAACAQIEAwQGBwQIBwAAAAABAgMAEQQFEiEGEzEiQVFxByNhgZGhFDJCkrHB0UNSU2IVJCY2Y3KCoxYzNXOi4fD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A7NGjK4ZhYDqaOUiQAIb23pGUSAoBa/jTKvI3bcHbageE8pbSbG96jdGMhYDYm9Gw592U2HTenEojHLtc9NqAnZXQqpuT0FBCOWSX2v0phHyzruDbup2/rGw7NvGgaVTI10F9rVIjqqaSdwLUCvyeywJvvekYmY6gRY70Axo0bBnFgOtHN60AR9q3hSMglXQL7+ymUcg6msb7bUBRMI00udJv0NRFGZywGxN708lnHNZgigbljas7nPpB4WyRTHjs3g5i7cuG8jfBb0GmkZXQqpuTbahh9USZOzeudn0g5pjz/ZfhPH4vwmxhGHj+LGopMPx/nP8A1PPMFlMRN+Xl0Jd7f5j30HRMVJGrqzSIoayrqYC58Bepw6iPSTva1vbXF+KeCMsy/hzNMzxOKzDMcwhw7PHiMZiCxRvFQLAb+ddgwsLfR4XJ+wp369KCSFSjamFgKOX1oXRvbrSZxMNAFvOmX1H1t79LUBRMI00ubHwqLQ2stba970RTndsWAO29EJABosdtrigeVlkXSh1G/QVCIn/d+dSBOSdRN+7an5wbuA86BGJYhrUm48aZW55s3Qb7UMbMXAbcUcwEYHLFidtqAXYwnSouD1vRCJXXmXNzvtShsynm7m9t6q43HYfAh5MXiosPCu5aVwoA8zQWBKZDoNrGiYcixXv8axWZ+lHhTCOYMDiZMyxP2Y8DEZCfI9K84cVcc52D/QnCf0GA/UxGbS6T56LA/jQdFVRONTE3G21eXmvEuUZKp/pLMsHhlHQSSDUfd1rGvwZxTnBvxFxliIoT1wuVx8offv8Aka9LLfRzwrl7FzlceMlPWXHEzk+5tvlQVH9KOWTyaOGcszTOpgSt4ICqfEiomx3pIzy1sJlmQQHpzX58o9tht+FbeONIYxHCixxgbKgAA91OelBgh6Ojjm18UcR5tmzd8Qk5MP3R+RFe/lXC2Q5KQ2W5ThIZALc3lAyW/wAx3r2jQtQRNUbVKaiagzfHw/sfmoO4aIL8WA/Ot3BKVijSwsFA+VYTj7+6eO9rQr8Zo66AiJyVNhq0igTRiJda9R40yHn31bBelqGJmdrPuD40U3Y08va/W1AzuYToW1vE0XKW2vv60o1DoDJuem9AXfXbe17UDq7THQwFuu1EYFHSnlUIt0Fj7KiErjuv50EzujqVBBJ7qjiBjvr7N+lOIWjOskEDupFufsNtNAOIu4LRjVZT8a5RwPwnlfGGBlz3icYjMMY2MmQxyzsI0CtYAKD4V1gnkqU63F6wfogNsizOH+DmuIX/AMqDWZZlGW5TGI8sy/C4RB3QxKv4dat0VMaAaY09MaATQmiNCaACKBqM0LUETVE1StUbUGa4+/uzMO5p8MP9+Ot5ofUGt2Qb39lYPjzfIFT97G4Uf76V0Aygert/LQPIyyLpQ6j4UMXq78w2B6CkI+T2ydVqR9fsOzpoBkVpG1R7r3VKHUJpJsbWt7aAOIByzvbelyr+svse1agaJTG2pxYeNS64z4Go9Yn7AuD1pfRz43oBWQyMENt/CidRANS953vRyKoQlbX9lRxbkh91t30Doon7TdQbbVz70TLyjxXBv2M9n+dq6BMSrAR3setqwPo5ITiTjXDX3TMkkI8NSn9DQbvupjRGhoBpjTmmNAJpjTmmNBGaE0ZFAaCNqiapmqJqDNcci+UYZR9rMsIP95TXQOUp9Z39ffWD4wGrCZav72bYTr/3RW4JYyEXOm9A6uZWCNt5U7DkW07366qKUKEuuzeyhh7Vw+4HQtQPGomXW17+yg5rA6LC17b0pSysQlwLd3SpbLpv3260AughGpevTeo+a7dPlRRFmazkke2pSVTYCghVGjYMwsB30cp5otHv403NEnYAIvSC8jc7322oFGRCul9iTXPuCLR+kjjxP35cK4+6/wCtdBI5/bG1tt6wXDgEHpX4qh75MJh5POxt+dBujQmiNCaATTGiNCaATTU5pqADQtTyMsaF5GCINyzGwFZDO/SRwrlBaOTMlxU69YsIpkPvYdkfGg1TdKifZSx2UdSegrj+Y+mDNcyn+jcNZOqsdg815XP+kWA+dee3D3GvFDGXP8ykhh6mJ5OyB/lXsj8aDfcR57lOLzPJspwuPhxGObNsOTFE2qwDgnURsPfXTeYmjRfcC3vrhOQ8KZPkOMix2HzET47CtqUq4bQfIbVv8r4zi5yx5hqCfxwv4ig2camNtT7D40Ut5rCOxt1vQR4mPGRK0DKyPurqbgijHqCb76vCgKNhEuh9jUfLYtrt2b3v7KIpzu2DYe2n5oHYsdtqB5GWVdKG5qMI67EH3b0QTk9sm/dtT/SF/dNA7RLGpdb3HtoUbnbP3C+1BHqLgPqK99+lSTWAvHt46aAXbktoTpa+9YPLzo9Mua/42TxN8GH6VvogGW8g3vtqrBSnk+miMfZmyd/fZhQbmhNBicTh8HA0+Mniw8KC7STOEVR4knasRn3pZ4VylWEGLfMJQfqYNdQ+8bL+NBuTUcskcMRkmkSNB1dzYD31wzMvTFxHm5MHDuVphb7BlU4iQfIL8q8luFuMuJmafP8AMZlRt2OKlLW79l6Cg6rnnpS4UynUi5gMdKOiYNeYPvfV+dYLMvTHnmaOcPw5k6QXJAZrzufbsAB86r4HhHhfLQGxeJkzSZeqxDUt/DY2+devFmseEjWLJ8vwuDToLAM/nbYD50GZbh3jbik87PcwxCQnc/SJSVXyQWUfKr2C4O4Yy5v67i5MynX9nDuvltt86u4ufEYlmGOndydxzmsPco2+FqDT2I5CpK9O2AFHwoL0Waw4OIRZRlmFwcYNraQz/AWA+fnVTFz4nFOy42eSS+6iRzpB9irt+dMBdJQupk/wugoLgOoQruv7Hv8AO+1BUluoWZdSkdHBtpNWsLmq/UxlhbpMBYe8d3n0qnP07VhID4HUaqaWd9CAlj0XqT5Cg3OT5zjMokEmDlBQ7tE26P8A/eIroWRcR4LO7Rs3JxNr8ljufI99chyTKM3LoXi5OGY9pZ9rDxC9QfO1aeLL4ISGsXdTcM3W9B0535R0IdhvY0fKUrr7yL1lMs4heEiPHpzo+gk6sPPxrRYfELiVEkEmuInYg7UEyOZTpbp1qTkJ7fjTShVX1dg38vWobO25ufM0EzyLIpVTcn2UEY5V2k2FqflGPt3vbupFhPt0tuaBpQZSGTe1cl9LjZ/lnFGU5pw5HMMQ2EkwzTRwhwnaBsSQQD511vVyDptqvveqebZZ/SeCeMSmFyQ8bgX0sOhI7x7KD5+XgnijiSZcRxDmUzb3IlcyEeV9hXsQ8I8MZDIv0xHx2KC30Ecz9F7jWozAZhh8ScNmDlZBuoGyOvituo6eXfXn4jCxYmMK9wRfSw6rQU1zhcOeRleX4bBr1BC63+HQfOvPxM+JxkevGYhpCrftJPwTp7qmxGGfDyqsyj+Qx7B/Zfx9n41EyOmtbICfs21MP099A2i0iEi4YWAfsCltySpJK6trKCp/1U99LqbFQRb1h1H4UN+yyNcW7QLNZbeNqA1OmVgG0sBb1Xbv53oBsqOoAa+9jdj7qv4LK8djbPFh30AWWS3LQjz7/d869zBcKG2rEz3PesAsPvMLn7tBlmUaizDWp6GTs/IVcw2SZji1X1JEX2Wn7Hytcj3VucHlOEwW+HhSMj7QuzfeNzVrSqkkAAnqaDI4ThCFVtjJnmv9hBy18r9T8vdXsYbA4XAx6MNh4otrEou58z1Neg5qu9BA9QtUz1C1BG1S4PG4jAy8zDSFb/WXqG8xULkKpJ2A7zVzB5TjsaNUGHbR11ydhfidz7hQaXJM7gxkgjkHKnC/U7m8SP0r2zLGfbXgZHkQwk3NllDy220rZV8faa9swMOm9Ayyu7BWsQfCikAhAKd+xvRyaNB02v3W61HDqueZ7tVA8aiYan69KFpWRtAsANt6eYMW9X0t3VImnli9ibb3oKmaZZhcdhGixMepRupvup8Qe41gM2ynEZXJ6z1mHJsk4FgT4N4H5GuiJq5g1Xt336U+LijniMTIsiOLOtrgj20HKXRZVMcia1OxXxqt/wAO5kbDDQM0B6bqpHne23tFbTFZZLkbPicPHzsCd2uLyw+3+ZasRSpPGssTK6MNmHQ0GSwXBshX+v4lVub6YRdvvEdfdWgwWS5dgSGhwys69HkOtr+Z6e6r5NCTQPpXUWtv4tuabVTFqAmgJmqJ2pncKLsbDxNVXxiGQRQhpZD0WMXJ91BK5qCU6V1MQoPQk2vV7DZRmmLIaUR4OM/xN3Pu7vlXoYThzBwyh5xJi3vu0xutvIbfG9Bm4ElxknLwcMk7XseWNh5noK9WDhnFGzY2ZIQfsR9ph7zt+NatlSOEJCFUD6oQdBTQi1zJ07r0FHLsly/DorxwXkH7SQ6mv+VXDK2rTfa9t+tKW5c6L6e61SjRyx01W996AXQQrqTY9N6ATP37+VKLVr9Ze1vtVKTGP/VBGsRjbU1gB4GicicDR1G9Nzeb2NOm/fekV5Ha+sOlqB42EKkSdeu1AYy7a13U70WkTdq+m21qXN0+rC3ttegdpVkXQDu1Cg5FzJtq8Kfl8sF73091IHn7fUt86BnUzHUlrDbes7meTPhXbE5OBqP/ADsH9mTxK+DfKtHq5G1tV973pcoP6zV7dqDI4XFx4qNmjuGU2dGFmQ+BqW+1elmmTxZjOMRhT9Gxg/ar0kHg47/PrVQcO4hrNj8ZZL7RwD8z+lBQnxsEI7b7nuG96ODDZpjt8NhOVF/Fm7I+HX5VocBk+Cw/rMPCqP01t2m+Jq4JdB5em9u+g8DC8NwtY43FyzyfuL2E/U/EeVe3g8NBgF0xQRxIf3VtfzqXlcnt3vbutSvz+o0299AzoZjrj6UQlULy/tfVptfKuttVLl/tL+21AyIYW1NsB4U8h51jHvbrS180aLab99IDkdLsGoHV1hXS/XrQGIltYtYm9Fo5/bvb2Uucfq6fZe9A7sJl0r1670AgPebeRouXye3fV3WpGc9y2oCeNY0LrcEe2hQ802fcClSoGlYwsFj2B3o1jV1DtuetKlQRrIzuEb6popfUi8e1/GnpUCjRZRqcXPSo2lZX0KeyDa1KlQSsixrqUWIoYjziQ/d4UqVA0rGJtKdOu9GI1Kh7b2vSpUEaO0j6H3U91HIohAMYtelSoFGolBZ9z0oDIwfR9m9qVKgORRECybGmi9cTzN7dKalQJ2MT6E2Ud1Hy1067b2vSpUEcbmVtL7jrUvLUdLilSoP/2Q=='
-          className='h-[65px] w-[65px] group-hover:scale-105'/>
-         <div className='info w-[75%]'>
-             <h3 className='font-[500] text-[16px] hover:text-red-500'>
-              <Link to='/products/4567 '>
-              Vneed Women Embroided Rayon Kurta Pant Set | Kurta set for women 
-              </Link>
-             </h3>
-             <span className='font-[400] text-blue-600'>
-             Hewlet Packard(HP)
-             </span>
-         </div>
-         </div>
-        </td>
-
-        <td className="px-2 py-2">
-          <h2 className='ml-5'>Electronics</h2>
-        </td>
-
-        <td className="px-2 py-2">
-          <h2 className='ml-2'>Laptops</h2>
-        </td>
-
-       
-
-        <td className="px-2 py-2">
-          <h2 className='text-[13px] !ml-5'>34,678</h2>
-        </td>
-
-        <td className="px-2 py-2 ">
-         <p className='text-[14px] w-[100px] ml-10'>
-          <span className='font-[600]'>234</span> sales</p>
-          <Progressbar value={56} type="success"/>
-        </td>
-
-
-
-        <td className="px-2 py-2">
-         <div className='flex items-center gap-2'>
-         <Tooltip title="Edit Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          <AiOutlineEdit  className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-
-          <Tooltip title="View Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          <FaRegEye  className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-
-          <Tooltip title="Remove Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          < FiTrash2   className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-         </div>
-        </td>
-               </tr>
-
-               <tr className='bg-blue-50'>
-                    <td className="px-2 py-2 ">
-          <Checkbox {...label} size="small"/>
-        </td>
-
-        <td className="px-2 py-2 object-cover w-[390px]">
-          <div className='flex items-center gap-2  group'>
-          <img src='data:image/jpeg;base64,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'
-          className='h-[65px] w-[65px] group-hover:scale-105'/>
-         <div className='info w-[75%]'>
-             <h3 className='font-[500] text-[16px] hover:text-red-500'>
-              <Link to='/products/4567 '>
-              Vneed Women Embroided Rayon Kurta Pant Set | Kurta set for women 
-              </Link>
-             </h3>
-             <span className='font-[400] text-blue-600'>
-             Hewlet Packard(HP)
-             </span>
-         </div>
-         </div>
-        </td>
-
-        <td className="px-2 py-2">
-          <h2 className='ml-5'>Electronics</h2>
-        </td>
-
-        <td className="px-2 py-2">
-          <h2 className='ml-2'>Laptops</h2>
-        </td>
-
-       
-
-        <td className="px-2 py-2">
-          <h2 className='text-[13px] !ml-5'>34,678</h2>
-        </td>
-
-        <td className="px-2 py-2 ">
-         <p className='text-[14px] w-[100px] ml-10'>
-          <span className='font-[600]'>234</span> sales</p>
-          <Progressbar value={56} type="success"/>
-        </td>
-
-
-
-        <td className="px-2 py-2">
-         <div className='flex items-center gap-2'>
-         <Tooltip title="Edit Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          <AiOutlineEdit  className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-
-          <Tooltip title="View Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          <FaRegEye  className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-
-          <Tooltip title="Remove Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          < FiTrash2   className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-         </div>
-        </td>
-               </tr>
-               <tr>
-                    <td className="px-2 py-2">
-          <Checkbox {...label} size="small"/>
-        </td>
-
-        <td className="px-2 py-2 object-cover w-[390px]">
-          <div className='flex items-center gap-2  group'>
-          <img src='data:image/jpeg;base64,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'
-          className='h-[65px] w-[65px] group-hover:scale-105'/>
-         <div className='info w-[75%]'>
-             <h3 className='font-[500] text-[16px] hover:text-red-500'>
-              <Link to='/products/4567 '>
-              Vneed Women Embroided Rayon Kurta Pant Set | Kurta set for women 
-              </Link>
-             </h3>
-             <span className='font-[400] text-blue-600'>
-             Hewlet Packard(HP)
-             </span>
-         </div>
-         </div>
-        </td>
-
-        <td className="px-2 py-2">
-          <h2 className='ml-5'>Electronics</h2>
-        </td>
-
-        <td className="px-2 py-2">
-          <h2 className='ml-2'>Laptops</h2>
-        </td>
-
-       
-
-        <td className="px-2 py-2">
-          <h2 className='text-[13px] !ml-5'>34,678</h2>
-        </td>
-
-        <td className="px-2 py-2 ">
-         <p className='text-[14px] w-[100px] ml-10'>
-          <span className='font-[600]'>234</span> sales</p>
-          <Progressbar value={56} type="success"/>
-        </td>
-
-
-
-        <td className="px-2 py-2">
-         <div className='flex items-center gap-2'>
-         <Tooltip title="Edit Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          <AiOutlineEdit  className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-
-          <Tooltip title="View Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          <FaRegEye  className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-
-          <Tooltip title="Remove Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          < FiTrash2   className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-         </div>
-        </td>
-               </tr>
-               <tr className='bg-blue-50'>
-                    <td className="px-2 py-2">
-          <Checkbox {...label} size="small"/>
-        </td>
-
-        <td className="px-2 py-2 object-cover w-[390px]">
-          <div className='flex items-center gap-2  group'>
-          <img src='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAJQArAMBIgACEQEDEQH/xAAcAAABBQEBAQAAAAAAAAAAAAACAAEDBAYHBQj/xABDEAACAQIEAwQGBwQIBwAAAAABAgMAEQQFEiEGEzEiQVFxByNhgZGhFDJCkrHB0UNSU2IVJCY2Y3KCoxYzNXOi4fD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A7NGjK4ZhYDqaOUiQAIb23pGUSAoBa/jTKvI3bcHbageE8pbSbG96jdGMhYDYm9Gw592U2HTenEojHLtc9NqAnZXQqpuT0FBCOWSX2v0phHyzruDbup2/rGw7NvGgaVTI10F9rVIjqqaSdwLUCvyeywJvvekYmY6gRY70Axo0bBnFgOtHN60AR9q3hSMglXQL7+ymUcg6msb7bUBRMI00udJv0NRFGZywGxN708lnHNZgigbljas7nPpB4WyRTHjs3g5i7cuG8jfBb0GmkZXQqpuTbahh9USZOzeudn0g5pjz/ZfhPH4vwmxhGHj+LGopMPx/nP8A1PPMFlMRN+Xl0Jd7f5j30HRMVJGrqzSIoayrqYC58Bepw6iPSTva1vbXF+KeCMsy/hzNMzxOKzDMcwhw7PHiMZiCxRvFQLAb+ddgwsLfR4XJ+wp369KCSFSjamFgKOX1oXRvbrSZxMNAFvOmX1H1t79LUBRMI00ubHwqLQ2stba970RTndsWAO29EJABosdtrigeVlkXSh1G/QVCIn/d+dSBOSdRN+7an5wbuA86BGJYhrUm48aZW55s3Qb7UMbMXAbcUcwEYHLFidtqAXYwnSouD1vRCJXXmXNzvtShsynm7m9t6q43HYfAh5MXiosPCu5aVwoA8zQWBKZDoNrGiYcixXv8axWZ+lHhTCOYMDiZMyxP2Y8DEZCfI9K84cVcc52D/QnCf0GA/UxGbS6T56LA/jQdFVRONTE3G21eXmvEuUZKp/pLMsHhlHQSSDUfd1rGvwZxTnBvxFxliIoT1wuVx8offv8Aka9LLfRzwrl7FzlceMlPWXHEzk+5tvlQVH9KOWTyaOGcszTOpgSt4ICqfEiomx3pIzy1sJlmQQHpzX58o9tht+FbeONIYxHCixxgbKgAA91OelBgh6Ojjm18UcR5tmzd8Qk5MP3R+RFe/lXC2Q5KQ2W5ThIZALc3lAyW/wAx3r2jQtQRNUbVKaiagzfHw/sfmoO4aIL8WA/Ot3BKVijSwsFA+VYTj7+6eO9rQr8Zo66AiJyVNhq0igTRiJda9R40yHn31bBelqGJmdrPuD40U3Y08va/W1AzuYToW1vE0XKW2vv60o1DoDJuem9AXfXbe17UDq7THQwFuu1EYFHSnlUIt0Fj7KiErjuv50EzujqVBBJ7qjiBjvr7N+lOIWjOskEDupFufsNtNAOIu4LRjVZT8a5RwPwnlfGGBlz3icYjMMY2MmQxyzsI0CtYAKD4V1gnkqU63F6wfogNsizOH+DmuIX/AMqDWZZlGW5TGI8sy/C4RB3QxKv4dat0VMaAaY09MaATQmiNCaACKBqM0LUETVE1StUbUGa4+/uzMO5p8MP9+Ot5ofUGt2Qb39lYPjzfIFT97G4Uf76V0Aygert/LQPIyyLpQ6j4UMXq78w2B6CkI+T2ydVqR9fsOzpoBkVpG1R7r3VKHUJpJsbWt7aAOIByzvbelyr+svse1agaJTG2pxYeNS64z4Go9Yn7AuD1pfRz43oBWQyMENt/CidRANS953vRyKoQlbX9lRxbkh91t30Doon7TdQbbVz70TLyjxXBv2M9n+dq6BMSrAR3setqwPo5ITiTjXDX3TMkkI8NSn9DQbvupjRGhoBpjTmmNAJpjTmmNBGaE0ZFAaCNqiapmqJqDNcci+UYZR9rMsIP95TXQOUp9Z39ffWD4wGrCZav72bYTr/3RW4JYyEXOm9A6uZWCNt5U7DkW07366qKUKEuuzeyhh7Vw+4HQtQPGomXW17+yg5rA6LC17b0pSysQlwLd3SpbLpv3260AughGpevTeo+a7dPlRRFmazkke2pSVTYCghVGjYMwsB30cp5otHv403NEnYAIvSC8jc7322oFGRCul9iTXPuCLR+kjjxP35cK4+6/wCtdBI5/bG1tt6wXDgEHpX4qh75MJh5POxt+dBujQmiNCaATTGiNCaATTU5pqADQtTyMsaF5GCINyzGwFZDO/SRwrlBaOTMlxU69YsIpkPvYdkfGg1TdKifZSx2UdSegrj+Y+mDNcyn+jcNZOqsdg815XP+kWA+dee3D3GvFDGXP8ykhh6mJ5OyB/lXsj8aDfcR57lOLzPJspwuPhxGObNsOTFE2qwDgnURsPfXTeYmjRfcC3vrhOQ8KZPkOMix2HzET47CtqUq4bQfIbVv8r4zi5yx5hqCfxwv4ig2camNtT7D40Ut5rCOxt1vQR4mPGRK0DKyPurqbgijHqCb76vCgKNhEuh9jUfLYtrt2b3v7KIpzu2DYe2n5oHYsdtqB5GWVdKG5qMI67EH3b0QTk9sm/dtT/SF/dNA7RLGpdb3HtoUbnbP3C+1BHqLgPqK99+lSTWAvHt46aAXbktoTpa+9YPLzo9Mua/42TxN8GH6VvogGW8g3vtqrBSnk+miMfZmyd/fZhQbmhNBicTh8HA0+Mniw8KC7STOEVR4knasRn3pZ4VylWEGLfMJQfqYNdQ+8bL+NBuTUcskcMRkmkSNB1dzYD31wzMvTFxHm5MHDuVphb7BlU4iQfIL8q8luFuMuJmafP8AMZlRt2OKlLW79l6Cg6rnnpS4UynUi5gMdKOiYNeYPvfV+dYLMvTHnmaOcPw5k6QXJAZrzufbsAB86r4HhHhfLQGxeJkzSZeqxDUt/DY2+devFmseEjWLJ8vwuDToLAM/nbYD50GZbh3jbik87PcwxCQnc/SJSVXyQWUfKr2C4O4Yy5v67i5MynX9nDuvltt86u4ufEYlmGOndydxzmsPco2+FqDT2I5CpK9O2AFHwoL0Waw4OIRZRlmFwcYNraQz/AWA+fnVTFz4nFOy42eSS+6iRzpB9irt+dMBdJQupk/wugoLgOoQruv7Hv8AO+1BUluoWZdSkdHBtpNWsLmq/UxlhbpMBYe8d3n0qnP07VhID4HUaqaWd9CAlj0XqT5Cg3OT5zjMokEmDlBQ7tE26P8A/eIroWRcR4LO7Rs3JxNr8ljufI99chyTKM3LoXi5OGY9pZ9rDxC9QfO1aeLL4ISGsXdTcM3W9B0535R0IdhvY0fKUrr7yL1lMs4heEiPHpzo+gk6sPPxrRYfELiVEkEmuInYg7UEyOZTpbp1qTkJ7fjTShVX1dg38vWobO25ufM0EzyLIpVTcn2UEY5V2k2FqflGPt3vbupFhPt0tuaBpQZSGTe1cl9LjZ/lnFGU5pw5HMMQ2EkwzTRwhwnaBsSQQD511vVyDptqvveqebZZ/SeCeMSmFyQ8bgX0sOhI7x7KD5+XgnijiSZcRxDmUzb3IlcyEeV9hXsQ8I8MZDIv0xHx2KC30Ecz9F7jWozAZhh8ScNmDlZBuoGyOvituo6eXfXn4jCxYmMK9wRfSw6rQU1zhcOeRleX4bBr1BC63+HQfOvPxM+JxkevGYhpCrftJPwTp7qmxGGfDyqsyj+Qx7B/Zfx9n41EyOmtbICfs21MP099A2i0iEi4YWAfsCltySpJK6trKCp/1U99LqbFQRb1h1H4UN+yyNcW7QLNZbeNqA1OmVgG0sBb1Xbv53oBsqOoAa+9jdj7qv4LK8djbPFh30AWWS3LQjz7/d869zBcKG2rEz3PesAsPvMLn7tBlmUaizDWp6GTs/IVcw2SZji1X1JEX2Wn7Hytcj3VucHlOEwW+HhSMj7QuzfeNzVrSqkkAAnqaDI4ThCFVtjJnmv9hBy18r9T8vdXsYbA4XAx6MNh4otrEou58z1Neg5qu9BA9QtUz1C1BG1S4PG4jAy8zDSFb/WXqG8xULkKpJ2A7zVzB5TjsaNUGHbR11ydhfidz7hQaXJM7gxkgjkHKnC/U7m8SP0r2zLGfbXgZHkQwk3NllDy220rZV8faa9swMOm9Ayyu7BWsQfCikAhAKd+xvRyaNB02v3W61HDqueZ7tVA8aiYan69KFpWRtAsANt6eYMW9X0t3VImnli9ibb3oKmaZZhcdhGixMepRupvup8Qe41gM2ynEZXJ6z1mHJsk4FgT4N4H5GuiJq5g1Xt336U+LijniMTIsiOLOtrgj20HKXRZVMcia1OxXxqt/wAO5kbDDQM0B6bqpHne23tFbTFZZLkbPicPHzsCd2uLyw+3+ZasRSpPGssTK6MNmHQ0GSwXBshX+v4lVub6YRdvvEdfdWgwWS5dgSGhwys69HkOtr+Z6e6r5NCTQPpXUWtv4tuabVTFqAmgJmqJ2pncKLsbDxNVXxiGQRQhpZD0WMXJ91BK5qCU6V1MQoPQk2vV7DZRmmLIaUR4OM/xN3Pu7vlXoYThzBwyh5xJi3vu0xutvIbfG9Bm4ElxknLwcMk7XseWNh5noK9WDhnFGzY2ZIQfsR9ph7zt+NatlSOEJCFUD6oQdBTQi1zJ07r0FHLsly/DorxwXkH7SQ6mv+VXDK2rTfa9t+tKW5c6L6e61SjRyx01W996AXQQrqTY9N6ATP37+VKLVr9Ze1vtVKTGP/VBGsRjbU1gB4GicicDR1G9Nzeb2NOm/fekV5Ha+sOlqB42EKkSdeu1AYy7a13U70WkTdq+m21qXN0+rC3ttegdpVkXQDu1Cg5FzJtq8Kfl8sF73091IHn7fUt86BnUzHUlrDbes7meTPhXbE5OBqP/ADsH9mTxK+DfKtHq5G1tV973pcoP6zV7dqDI4XFx4qNmjuGU2dGFmQ+BqW+1elmmTxZjOMRhT9Gxg/ar0kHg47/PrVQcO4hrNj8ZZL7RwD8z+lBQnxsEI7b7nuG96ODDZpjt8NhOVF/Fm7I+HX5VocBk+Cw/rMPCqP01t2m+Jq4JdB5em9u+g8DC8NwtY43FyzyfuL2E/U/EeVe3g8NBgF0xQRxIf3VtfzqXlcnt3vbutSvz+o0299AzoZjrj6UQlULy/tfVptfKuttVLl/tL+21AyIYW1NsB4U8h51jHvbrS180aLab99IDkdLsGoHV1hXS/XrQGIltYtYm9Fo5/bvb2Uucfq6fZe9A7sJl0r1670AgPebeRouXye3fV3WpGc9y2oCeNY0LrcEe2hQ802fcClSoGlYwsFj2B3o1jV1DtuetKlQRrIzuEb6popfUi8e1/GnpUCjRZRqcXPSo2lZX0KeyDa1KlQSsixrqUWIoYjziQ/d4UqVA0rGJtKdOu9GI1Kh7b2vSpUEaO0j6H3U91HIohAMYtelSoFGolBZ9z0oDIwfR9m9qVKgORRECybGmi9cTzN7dKalQJ2MT6E2Ud1Hy1067b2vSpUEcbmVtL7jrUvLUdLilSoP/2Q=='
-          className='h-[65px] w-[65px] group-hover:scale-105'/>
-         <div className='info w-[75%]'>
-             <h3 className='font-[500] text-[16px] hover:text-red-500'>
-              <Link to='/products/4567 '>
-              Vneed Women Embroided Rayon Kurta Pant Set | Kurta set for women 
-              </Link>
-             </h3>
-             <span className='font-[400] text-blue-600'>
-             Hewlet Packard(HP)
-             </span>
-         </div>
-         </div>
-        </td>
-
-        <td className="px-2 py-2">
-          <h2 className='ml-5'>Electronics</h2>
-        </td>
-
-        <td className="px-2 py-2">
-          <h2 className='ml-2'>Laptops</h2>
-        </td>
-
-       
-
-        <td className="px-2 py-2">
-          <h2 className='text-[13px] !ml-5'>34,678</h2>
-        </td>
-
-        <td className="px-2 py-2 ">
-         <p className='text-[14px] w-[100px] ml-10'>
-          <span className='font-[600]'>234</span> sales</p>
-          <Progressbar value={56} type="success"/>
-        </td>
-
-
-
-        <td className="px-2 py-2">
-         <div className='flex items-center gap-2'>
-         <Tooltip title="Edit Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          <AiOutlineEdit  className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-
-          <Tooltip title="View Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          <FaRegEye  className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-
-          <Tooltip title="Remove Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          < FiTrash2   className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-         </div>
-        </td>
-               </tr>
-               <tr>
-                    <td className="px-2 py-2">
-          <Checkbox {...label} size="small"/>
-        </td>
-
-        <td className="px-2 py-2 object-cover w-[390px]">
-          <div className='flex items-center gap-2  group'>
-          <img src='data:image/jpeg;base64,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'
-          className='h-[65px] w-[65px] group-hover:scale-105'/>
-         <div className='info w-[75%]'>
-             <h3 className='font-[500] text-[16px] hover:text-red-500'>
-              <Link to='/products/4567 '>
-              Vneed Women Embroided Rayon Kurta Pant Set | Kurta set for women 
-              </Link>
-             </h3>
-             <span className='font-[400] text-blue-600'>
-             Hewlet Packard(HP)
-             </span>
-         </div>
-         </div>
-        </td>
-
-        <td className="px-2 py-2">
-          <h2 className='ml-5'>Electronics</h2>
-        </td>
-
-        <td className="px-2 py-2">
-          <h2 className='ml-2'>Laptops</h2>
-        </td>
-
-       
-
-        <td className="px-2 py-2">
-          <h2 className='text-[13px] !ml-5'>34,678</h2>
-        </td>
-
-        <td className="px-2 py-2 ">
-         <p className='text-[14px] w-[100px] ml-10'>
-          <span className='font-[600]'>234</span> sales</p>
-          <Progressbar value={56} type="success"/>
-        </td>
-
-
-
-        <td className="px-2 py-2">
-         <div className='flex items-center gap-2'>
-         <Tooltip title="Edit Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          <AiOutlineEdit  className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-
-          <Tooltip title="View Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          <FaRegEye  className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-
-          <Tooltip title="Remove Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          < FiTrash2   className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-         </div>
-        </td>
-               </tr>
-               <tr className='bg-blue-50'>
-                    <td className="px-2 py-2">
-          <Checkbox {...label} size="small"/>
-        </td>
-
-        <td className="px-2 py-2 object-cover w-[390px]">
-          <div className='flex items-center gap-2  group'>
-          <img src='data:image/jpeg;base64,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'
-          className='h-[65px] w-[65px] group-hover:scale-105'/>
-         <div className='info w-[75%]'>
-             <h3 className='font-[500] text-[16px] hover:text-red-500'>
-              <Link to='/products/4567 '>
-              Vneed Women Embroided Rayon Kurta Pant Set | Kurta set for women 
-              </Link>
-             </h3>
-             <span className='font-[400] text-blue-600'>
-             Hewlet Packard(HP)
-             </span>
-         </div>
-         </div>
-        </td>
-
-        <td className="px-2 py-2">
-          <h2 className='ml-5'>Electronics</h2>
-        </td>
-
-        <td className="px-2 py-2">
-          <h2 className='ml-2'>Laptops</h2>
-        </td>
-
-       
-
-        <td className="px-2 py-2">
-          <h2 className='text-[13px] !ml-5'>34,678</h2>
-        </td>
-
-        <td className="px-2 py-2 ">
-         <p className='text-[14px] w-[100px] ml-10'>
-          <span className='font-[600]'>234</span> sales</p>
-          <Progressbar value={56} type="success"/>
-        </td>
-
-
-
-        <td className="px-2 py-2">
-         <div className='flex items-center gap-2'>
-         <Tooltip title="Edit Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          <AiOutlineEdit  className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-
-          <Tooltip title="View Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          <FaRegEye  className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-
-          <Tooltip title="Remove Product" placement="top">
-          <Button className='!w-[35px] !h-[35px] !min-w-[35px] bg-[#f1f1f1] !rounded-full  hover:!bg-[#f1f1f1]'>
-          < FiTrash2   className='!text-[30px] text-[rgba(0,0,0,0.7)]'/>
-          </Button>
-          </Tooltip>
-         </div>
-        </td>
-               </tr>
-                  </tbody>
-                </table>
-         </div>
-         <div className='!flex !items-center !justify-end'> <Pagination count={10} color="primary" className='!px-3 !py-3' /></div>
-        
-            </div>
             
            <div className="w-full mt-7 bg-white rounded-md">
             <h2 className='font-[600] text-[16px] px-2 py-2 pb-0'>Total Users & Total Sales</h2>
