@@ -39,7 +39,7 @@ import VerifyUI from "./Pages/VerifyAccount";
 import ChangePassword from "./Pages/ChangePassword";
 import AddAddress from "./Pages/Address";
 import EditCategory from "./Pages/Category/Editcategory";
-import {fetchDataFromApi } from "../Utils/api";
+
 import EditProducts from "./Pages/Products/EditProduct";
 
 const Layout = () => {
