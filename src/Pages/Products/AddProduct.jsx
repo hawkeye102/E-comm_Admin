@@ -33,7 +33,7 @@ const AddProducts = () => {
     const [formfields,setFormfields] =useState({
       name:'',
       description:'',
-      images:'',
+      images:[],
       brand:'',
       price:[],
       oldPrice:'',
@@ -211,7 +211,7 @@ if (!formfields.location || formfields.location === '') {
               // Build the payload
               const dataToSend = {
                 ...formfields,
-                images: preview[0], 
+                images: preview, 
                 price: Number(formfields.price),
                 oldPrice: Number(formfields.oldPrice),
                 discount: Number(formfields.discount),

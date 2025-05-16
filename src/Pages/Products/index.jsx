@@ -245,7 +245,7 @@ import {
   
                       <TableCell>
                         <Box display="flex" alignItems="center" gap={2}>
-                          <Avatar src={item.images} variant="square" sx={{ width: 60, height: 60 }} />
+                          <Avatar src={item.images[0]} variant="square" sx={{ width: 60, height: 60 }} />
                         </Box>
                       </TableCell>
   
