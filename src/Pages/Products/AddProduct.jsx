@@ -15,6 +15,9 @@ import { Mycontext } from '../../App';
 import { useEffect } from 'react';
 import { fetchDataFromApi } from '../../../utils/api';
 import { postDataProduct } from '../../../utils/api';
+import Switch from '@mui/material/Switch';
+
+const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
 
 
@@ -28,6 +31,7 @@ const AddProducts = () => {
 
    const context = useContext(Mycontext)
    const [preview, setpreview] = useState([])
+   const [bannerpreview, setbannerpreview] = useState([])
    const [isLoading,setisLoading] = useState(false)
 
     const [formfields,setFormfields] =useState({
@@ -35,7 +39,7 @@ const AddProducts = () => {
       description:'',
       images:[],
       brand:'',
-      price:[],
+      price:'',
       oldPrice:'',
       catName:'',
       catId:'',
@@ -51,15 +55,22 @@ const AddProducts = () => {
       size:[],
       productWeight:[],
       location:'',
+      bannerTitlename:'',
+      bannerimages:[],
+      IsDisplaybanner:false
 
 
     })
+
+    const [checkedSwitch,setcheckedSwitch] = useState(false)
 
     const [catdata,setCatdata]=useState([])
 
     const handleChangeProduct = (event) => {
       const selectedCatId = event.target.value;
       setProductcat(selectedCatId);
+
+    
     
       const selectedCat = catdata.find((cat) => cat._id === selectedCatId);
     
@@ -160,6 +171,10 @@ const AddProducts = () => {
          })
          }
 
+const handleChangeSwitch =(event)=>{
+setcheckedSwitch(event.target.checked);
+formfields.IsDisplaybanner=event.target.checked
+}
           
 
  useEffect(() => {
@@ -168,6 +183,8 @@ const AddProducts = () => {
             }
        }, [context.isScreenPanelopen.open]);
                        
+    
+
    const refreshCategoryList = () => {
                
    fetchDataFromApi('/api/category')
@@ -218,6 +235,9 @@ if (!formfields.location || formfields.location === '') {
                 countInstock: Number(formfields.countInstock),
                 rating: Number(formfields.rating),
                 isFeatured: ProductFeatured === 'true' || ProductFeatured === true, 
+                 bannerTitlename: formfields.bannerTitlename,
+                 bannerimages:bannerpreview,
+                 IsDisplaybanner:formfields.IsDisplaybanner
               };
             
               console.log("Sending this product data:", dataToSend);
@@ -226,14 +246,20 @@ if (!formfields.location || formfields.location === '') {
               postDataProduct('/api/product/create', dataToSend).then((res) => {
                 setisLoading(false);
                 context.setisScreenPanelopen({ open: false }); // close the panel after success
-                window.location.href = "/product";
+                //window.location.href = "/product";
               }).catch((err) => {
                 setisLoading(false);
                 context.openAlertBox("error", "Something went wrong while creating the product.");
                 console.error(err);
               });
             };
-            
+     useEffect(() => {
+  setFormfields(prev => ({
+    ...prev,
+    bannerimages: bannerpreview,
+  }));
+}, [bannerpreview]);
+          
             
   return (
    <section className='p-5 bg-[#f1f1f1]'>
@@ -439,45 +465,121 @@ if (!formfields.location || formfields.location === '') {
 
     </div>
 
-    <div className="flex flex-wrap grid-cols-8 gap-4">
-  {preview?.length !== 0 &&
-    preview.map((image, index) => (
-      <div
-        key={index}
-        className="relative w-[150px] h-[120px] rounded-md overflow-hidden shadow-md border border-gray-300"
-      >
-        <LazyLoadImage
-          src={image}
-          alt="preview preview"
-          effect="blur"
-          className="w-full h-full object-cover"
-        />
-        <button
-          type="button"
-          onClick={() => {
-            const newPreview = [...preview];
-            newPreview.splice(index, 1);
-            setpreview(newPreview);
-          }}
-          className="absolute top-1 right-1 w-3 h-3 bg-red-600 text-white
-           rounded-full flex items-center justify-center z-20 shadow-sm hover:bg-red-700"
-        >
-          <IoClose size={12} />
-        </button>
-      </div>
-    ))}
+   <div className="mt-6">
+  <h3 className="text-lg font-semibold mb-2">Media & Images</h3>
 
-  <div className="uploadBoxWrapper relative w-[150px] h-[120px]">
-    <UploadBox
-      multiple={true}
-      
-      name="images"
-      url="/api/product/upload"
-      setpreview={setpreview}
-    />
+  <div className="flex flex-wrap gap-4">
+    {preview?.length !== 0 &&
+      preview.map((image, index) => (
+        <div
+          key={index}
+          className="relative w-[150px] h-[120px] rounded-md overflow-hidden shadow-md border border-gray-300"
+        >
+          <LazyLoadImage
+            src={image}
+            alt="preview preview"
+            effect="blur"
+            className="w-full h-full object-cover"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              const newPreview = [...preview];
+              newPreview.splice(index, 1);
+              setpreview(newPreview);
+            }}
+            className="absolute top-1 right-1 w-3 h-3 bg-red-600 text-white
+            rounded-full flex items-center justify-center z-20 shadow-sm hover:bg-red-700"
+          >
+            <IoClose size={12} />
+          </button>
+        </div>
+      ))}
+
+    <div className="uploadBoxWrapper relative w-[150px] h-[120px]">
+      <UploadBox
+        multiple={true}
+        name="images"
+        url="/api/product/upload"
+        setpreview={setpreview}
+      />
+    </div>
   </div>
 </div>
 
+
+
+
+<div className="mt-6">
+  <h3 className="text-lg font-semibold mb-2">BannerImage</h3>
+
+  <div className="flex justify-between items-start gap-4 flex-wrap">
+  {/* Image previews + upload */}
+  <div className="flex flex-wrap gap-4">
+    {bannerpreview?.length !== 0 &&
+      bannerpreview.map((image, index) => (
+        <div
+          key={index}
+          className="relative w-[150px] h-[120px] rounded-md overflow-hidden shadow-md border border-gray-300"
+        >
+          <LazyLoadImage
+            src={image}
+            alt="preview preview"
+            effect="blur"
+            className="w-full h-full object-cover"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              const newPreview = [...bannerpreview];
+              newPreview.splice(index, 1);
+              setbannerpreview(newPreview);
+            }}
+            className="absolute top-1 right-1 w-3 h-3 bg-red-600 text-white
+              rounded-full flex items-center justify-center z-20 shadow-sm hover:bg-red-700"
+          >
+            <IoClose size={12} />
+          </button>
+        </div>
+      ))}
+
+    {/* Upload Box */}
+    <div className="uploadBoxWrapper relative w-[150px] h-[120px]">
+      <UploadBox
+        multiple={true}
+        name="images"
+        url="/api/product/uploadbannerImage"
+        setpreview={setbannerpreview}
+      />
+    </div>
+  </div>
+
+  {/* Switches on the same row, right aligned */}
+  <div className="flex flex-col gap-2">
+    <Switch {...label} 
+    checked={checkedSwitch}
+    onChange={handleChangeSwitch}
+   /> 
+   
+  </div>
+</div>
+
+  <div className='grid grid-cols-1'>
+  <div className='mb-3'>
+    <h1 className='text-[16px] font-bold mb-2 mt-2'>Banner Title Name</h1>
+    <input 
+      type='text' 
+      className='plane w-full h-[40px] rounded-sm border border-[rgba(0,0,0,0.2)] focus:outline-none p-3 focus:border-[rgba(0,0,0,0.9)]' 
+      name='bannerTitlename' 
+      value={formfields.bannerTitlename} 
+      onChange={onchangeInput}
+    />
+    
+  </div>
+  
+</div>
+
+</div>
 
     </div>
    
@@ -487,7 +589,7 @@ if (!formfields.location || formfields.location === '') {
 <Button type="submit" className='btn-blue btn-sm mt-3 w-full flex gap-3'>
 <FaCloudUploadAlt  className='text-[25px] text-white'/>
 Publish and View</Button>
-   </form>
+ </form>
    </section>
   )
 }

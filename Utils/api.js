@@ -289,6 +289,9 @@ export const postDataProduct = async (url, formData) => {
         size: formData.size,
         productWeight: formData.productWeight,
         location: cleanedLocation,
+         bannerTitlename: formData.bannerTitlename,
+         bannerimages:formData.bannerimages,
+         IsDisplaybanner:formData.IsDisplaybanner
       }),
     });
 
