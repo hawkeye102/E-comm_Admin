@@ -199,6 +199,16 @@ formfields.IsDisplaybanner=event.target.checked
        .catch((err) => console.error("API Fetch Error:", err));
             };
 
+            const selectedCat = catdata.find(cat => cat._id === formfields.catId);
+const hasSubcategories = selectedCat?.children?.length > 0;
+
+if (hasSubcategories && !formfields.subcatId) {
+  context.openAlertBox("error", "Please select a subcategory.");
+  setisLoading(false);
+  return;
+}
+
+
             const handleSubmitCat = (e) => {
               e.preventDefault();
               setisLoading(true);
@@ -226,19 +236,34 @@ if (!formfields.location || formfields.location === '') {
 }
             
               // Build the payload
-              const dataToSend = {
-                ...formfields,
-                images: preview, 
-                price: Number(formfields.price),
-                oldPrice: Number(formfields.oldPrice),
-                discount: Number(formfields.discount),
-                countInstock: Number(formfields.countInstock),
-                rating: Number(formfields.rating),
-                isFeatured: ProductFeatured === 'true' || ProductFeatured === true, 
-                 bannerTitlename: formfields.bannerTitlename,
-                 bannerimages:bannerpreview,
-                 IsDisplaybanner:formfields.IsDisplaybanner
-              };
+             const {
+  subcatId,
+  subcat,
+  subcatName,
+  ...rest
+} = formfields;
+
+const dataToSend = {
+  ...rest,
+  images: preview,
+  price: Number(formfields.price),
+  oldPrice: Number(formfields.oldPrice),
+  discount: Number(formfields.discount),
+  countInstock: Number(formfields.countInstock),
+  rating: Number(formfields.rating),
+  isFeatured: ProductFeatured === 'true' || ProductFeatured === true,
+  bannerTitlename: formfields.bannerTitlename,
+  bannerimages: bannerpreview,
+  IsDisplaybanner: formfields.IsDisplaybanner,
+};
+
+// Add subcategory fields if they exist
+if (subcatId && subcatName) {
+  dataToSend.subcatId = subcatId;
+  dataToSend.subcat = subcat;
+  dataToSend.subcatName = subcatName;
+}
+
             
               console.log("Sending this product data:", dataToSend);
             

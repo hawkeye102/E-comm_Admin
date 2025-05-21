@@ -336,7 +336,7 @@ const [productdata, setProductdata] = useState([]);
                 />
               </TableCell>
               <TableCell>
-                <Avatar src={item.images} variant="square" sx={{ width: 60, height: 60 }} />
+                <Avatar src={item.images?.[0] || ""} variant="square" sx={{ width: 60, height: 60 }} />
               </TableCell>
               <TableCell sx={{ fontWeight: 500 }}>
   <Typography variant="body1" fontWeight={600}>
