@@ -237,7 +237,6 @@ if (!formfields.location || formfields.location === '') {
               const dataToSend = {
                 ...formfields,
                 images: preview[0], 
-                images: preview[0],
                 price: Number(formfields.price),
                 oldPrice: Number(formfields.oldPrice),
                 discount: Number(formfields.discount),
