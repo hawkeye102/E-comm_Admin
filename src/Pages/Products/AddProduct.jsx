@@ -28,6 +28,7 @@ const AddProducts = () => {
     const [ProductRams, setProductRams] = React.useState([]);
     const [ProductWeight, setProductWeight] = React.useState([]);
     const [ProductSize, setProductSize] = React.useState([]);
+     
 
    const context = useContext(Mycontext)
    const [preview, setpreview] = useState([])
@@ -57,7 +58,8 @@ const AddProducts = () => {
       location:'',
       bannerTitlename:'',
       bannerimages:[],
-      IsDisplaybanner:false
+      IsDisplaybanner:false,
+      isLatest: false,
 
 
     })
@@ -71,6 +73,8 @@ const AddProducts = () => {
       setProductcat(selectedCatId);
 
     
+    
+
     
       const selectedCat = catdata.find((cat) => cat._id === selectedCatId);
     
@@ -119,6 +123,13 @@ const AddProducts = () => {
     }));
   };
   
+    const handleChangeLatest = (event) => {
+  const value = event.target.value === 'true' || event.target.value === true;
+  setFormfields((prev) => ({
+    ...prev,
+    isLatest: value,
+  }));
+};
 
   const handleChangeFeatured = (event) => {
     setProductFeatured(event.target.value);
@@ -202,17 +213,19 @@ formfields.IsDisplaybanner=event.target.checked
             const selectedCat = catdata.find(cat => cat._id === formfields.catId);
 const hasSubcategories = selectedCat?.children?.length > 0;
 
-if (hasSubcategories && !formfields.subcatId) {
-  context.openAlertBox("error", "Please select a subcategory.");
-  setisLoading(false);
-  return;
-}
+
 
 
             const handleSubmitCat = (e) => {
               e.preventDefault();
               setisLoading(true);
             
+              if (hasSubcategories && !formfields.subcatId) {
+    context.openAlertBox("error", "Please select a subcategory.");
+    setisLoading(false);
+    return;
+  }
+
               
               if (formfields.name === "") {
                 context.openAlertBox("error", "Please enter a product name.");
@@ -255,6 +268,8 @@ const dataToSend = {
   bannerTitlename: formfields.bannerTitlename,
   bannerimages: bannerpreview,
   IsDisplaybanner: formfields.IsDisplaybanner,
+  isLatest:formfields.isLatest,
+
 };
 
 // Add subcategory fields if they exist
@@ -486,6 +501,25 @@ if (subcatId && subcatName) {
     />
   </div>
 </div>
+
+
+{/* // for latetest products */}
+<div className='col'>
+  <h1 className='text-[16px] font-bold mb-2'>Is Latest Product?</h1>
+  <Select
+    labelId="product-latest-label"
+    id="product-latest"
+    value={formfields.isLatest}
+    onChange={handleChangeLatest}
+    className='w-full'
+    size='small'
+  >
+    <MenuItem value={true}>Yes</MenuItem>
+    <MenuItem value={false}>No</MenuItem>
+  </Select>
+</div>
+
+
 
 
     </div>
